@@ -1,5 +1,7 @@
 ﻿using System;
 using FluentAssertions;
+using ProductManager.Core.Domain;
+using ProductManager.Core.Exceptions;
 using Xunit;
 
 namespace ProductManager.UnitTests
