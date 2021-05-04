@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ProductManager.Core.Domain;
 using ProductManager.Core.Repositories;
+using ProductManager.Infrastructure.Repositories;
 using Xunit;
 
 namespace ProductManager.UnitTests
