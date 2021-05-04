@@ -41,7 +41,7 @@ namespace ProductManager.Core.Domain
         {
             if (string.IsNullOrWhiteSpace(name) || !_nameRegex.IsMatch(name))
             {
-                throw new InvalidUsernameException("User can not have an empty name.");
+                throw new InvalidUsernameException("User name should contain only alphanumeric characters.");
             }
             Name = name;
         }
@@ -50,7 +50,7 @@ namespace ProductManager.Core.Domain
         {
             if (string.IsNullOrWhiteSpace(email) || !_emailRegex.IsMatch(email))
             {
-                throw new InvalidEmailException("User can not have an empty email.");
+                throw new InvalidEmailException("Email is invalid.");
             }
             Email = email;
         }
@@ -59,7 +59,7 @@ namespace ProductManager.Core.Domain
         {
             if (string.IsNullOrWhiteSpace(password) || !_passwordRegex.IsMatch(password))
             {
-                throw new InvalidPasswordException("User can not have an empty password.");
+                throw new InvalidPasswordException("User password should contain only alphanumeric characters.");
             }
             Password = password;
         }
