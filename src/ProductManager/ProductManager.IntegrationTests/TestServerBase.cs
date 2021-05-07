@@ -20,7 +20,7 @@ namespace ProductManager.IntegrationTests
         {
             ExpiryMinutes = 1,
             Issuer = "testIssuer",
-            Key = "secret"
+            Key = "secretKeyDED15CCD-AACA-4CCE-8AA4-180938F052C9"
         };
         protected TestServer BuildTestServer()
         {
