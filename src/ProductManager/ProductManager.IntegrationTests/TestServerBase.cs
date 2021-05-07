@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using ProductManager.Core.Repositories;
+using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Settings;
 using ProductManager.Web;
 
@@ -25,9 +28,10 @@ namespace ProductManager.IntegrationTests
                 .UseStartup<Startup>()
                 .ConfigureServices(services =>
                 {
+                    services.RemoveAll(typeof(IUserRepository));
+                    services.AddSingleton<IUserRepository, InMemoryUserRepository>();
                     services.Configure<JwtSettings>(x =>
                     {
-                        //x = _jwtSettings;
                         x.ExpiryMinutes = _jwtSettings.ExpiryMinutes;
                         x.Issuer = _jwtSettings.Issuer;
                         x.Key = _jwtSettings.Key;
