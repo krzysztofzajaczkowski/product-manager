@@ -10,23 +10,26 @@ namespace ProductManager.Infrastructure.Repositories
 {
     public class InMemoryUserRepository : IUserRepository
     {
-        private static readonly ISet<Role> _roles = new HashSet<Role>
-        {
-            new Role(Guid.NewGuid(), "user"),
-            new Role(Guid.NewGuid(), "admin")
-        };
+        private readonly ISet<Role> _roles = new HashSet<Role>();
 
-        private static readonly ISet<User> _users = new HashSet<User>
+        private readonly ISet<User> _users = new HashSet<User>();
+
+        public InMemoryUserRepository()
         {
-            new User(Guid.NewGuid(), "User", "user@user.com", "secret", _roles.SingleOrDefault(r => r.Name == "user")),
-            new User(Guid.NewGuid(), "Admin", "admin@admin.com", "secret", _roles.ToArray())
-        };
+            _roles.Add(new Role(Guid.NewGuid(), "user"));
+            _roles.Add(new Role(Guid.NewGuid(), "admin"));
+
+            _users.Add(new User(Guid.NewGuid(), "User", "user@user.com", "secret",
+                _roles.SingleOrDefault(r => r.Name == "user")));
+            _users.Add(new User(Guid.NewGuid(), "Admin", "admin@admin.com", "secret", _roles.ToArray()));
+
+        }
 
         public async Task<Role> GetRoleAsync(Guid id)
             => await Task.FromResult(_roles.SingleOrDefault(x => x.Id == id));
 
         public async Task<Role> GetRoleAsync(string name)
-            => await Task.FromResult(_roles.SingleOrDefault(x => 
+            => await Task.FromResult(_roles.SingleOrDefault(x =>
                 string.Equals(x.Name, name, StringComparison.InvariantCultureIgnoreCase)));
 
         public Task AddAsync(Role role)
