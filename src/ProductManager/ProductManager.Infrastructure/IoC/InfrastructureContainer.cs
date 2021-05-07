@@ -20,6 +20,7 @@ namespace ProductManager.Infrastructure.IoC
 
             services.AddSingleton<IUserRepository, InMemoryUserRepository>();
             services.AddTransient<IJwtHandler, JwtHandler>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }
