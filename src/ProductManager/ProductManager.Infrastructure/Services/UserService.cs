@@ -22,19 +22,57 @@ namespace ProductManager.Infrastructure.Services
             _jwtHandler = jwtHandler;
         }
 
-        public Task<AccountDto> GetAccountAsync(Guid userId)
+        public async Task<AccountDto> GetAccountAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetOrFailAsync(userId);
+
+            return new AccountDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Roles = user.Roles.Select(r => r.Name).ToList()
+            };
         }
 
-        public Task RegisterAsync(Guid userId, string email, string name, string password, string roleName = "user")
+        public async Task RegisterAsync(Guid userId, string email,
+            string name, string password, string roleName = "user")
         {
-            throw new NotImplementedException();
+            var role = await _userRepository.GetRoleOrFailAsync(roleName);
+
+            var user = await _userRepository.GetUserAsync(email);
+            if (user != null)
+            {
+                throw new EmailAlreadyUsedException($"User with email: '{email}' already exists.");
+            }
+            user = new User(userId, name, email, password, role);
+            await _userRepository.AddAsync(user);
         }
 
-        public Task<JwtDto> LoginAsync(string email, string password, string role)
+        public async Task<JwtDto> LoginAsync(string email, string password, string role)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserAsync(email);
+            if (user == null)
+            {
+                throw new InvalidCredentialsException("Invalid credentials.");
+            }
+            if (user.Password != password)
+            {
+                throw new InvalidCredentialsException("Invalid credentials.");
+            }
+            if (user.Roles.All(r => r.Name != role))
+            {
+                throw new InvalidCredentialsException("Invalid credentials.");
+            }
+
+            var jwt = _jwtHandler.CreateToken(user.Id, role);
+
+            return new JwtDto
+            {
+                Token = jwt.Token,
+                Expires = jwt.Expires,
+                Role = role
+            };
         }
     }
 }
