@@ -2,7 +2,7 @@
 
 namespace ProductManager.Core.Exceptions
 {
-    public class EmailAlreadyUsedException : Exception
+    public class EmailAlreadyUsedException : DomainException
     {
         public EmailAlreadyUsedException(string message) : base(message)
         {
