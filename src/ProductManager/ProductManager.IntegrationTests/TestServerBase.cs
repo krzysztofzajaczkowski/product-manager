@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ProductManager.Core.Repositories;
@@ -16,26 +19,22 @@ namespace ProductManager.IntegrationTests
 {
     public class TestServerBase
     {
-        protected JwtSettings _jwtSettings = new JwtSettings
-        {
-            ExpiryMinutes = 1,
-            Issuer = "testIssuer",
-            Key = "secretKeyDED15CCD-AACA-4CCE-8AA4-180938F052C9"
-        };
         protected TestServer BuildTestServer()
         {
+            var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var solutionPath = Directory.GetParent(testAssemblyPath.Substring(0, testAssemblyPath.LastIndexOf($@"\bin\", StringComparison.Ordinal))).FullName;
+            var appsettingsPath = Path.Join(solutionPath, "ProductManager.Web");
+
             var webHostBuilder = new WebHostBuilder()
+                .UseConfiguration(new ConfigurationBuilder()
+                    .SetBasePath(appsettingsPath)
+                    .AddJsonFile("appsettings.json")
+                    .Build())
                 .UseStartup<Startup>()
-                .ConfigureServices(services =>
+                .ConfigureTestServices(services =>
                 {
                     services.RemoveAll(typeof(IUserRepository));
                     services.AddSingleton<IUserRepository, InMemoryUserRepository>();
-                    services.Configure<JwtSettings>(x =>
-                    {
-                        x.ExpiryMinutes = _jwtSettings.ExpiryMinutes;
-                        x.Issuer = _jwtSettings.Issuer;
-                        x.Key = _jwtSettings.Key;
-                    });
                 });
             return new TestServer(webHostBuilder);
         }
