@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using ProductManager.Core.Repositories;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Settings;
@@ -19,6 +20,8 @@ namespace ProductManager.IntegrationTests
 {
     public class TestServerBase
     {
+        protected JwtSettings _jwtSettings;
+
         protected TestServer BuildTestServer()
         {
             var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -36,7 +39,12 @@ namespace ProductManager.IntegrationTests
                     services.RemoveAll(typeof(IUserRepository));
                     services.AddSingleton<IUserRepository, InMemoryUserRepository>();
                 });
-            return new TestServer(webHostBuilder);
+
+            var server = new TestServer(webHostBuilder);
+
+            _jwtSettings = server.Services.GetService<IOptions<JwtSettings>>().Value;
+
+            return server;
         }
     }
 }
