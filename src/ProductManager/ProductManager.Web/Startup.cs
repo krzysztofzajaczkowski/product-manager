@@ -1,3 +1,5 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -5,9 +7,12 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using ProductManager.Infrastructure.IoC;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Services;
+using ProductManager.Infrastructure.Settings;
+using ProductManager.Web.Extensions;
 
 namespace ProductManager.Web
 {
@@ -26,6 +31,33 @@ namespace ProductManager.Web
             services.AddControllersWithViews();
 
             services.AddInfrastructure(Configuration);
+
+            var settings = new JwtSettings();
+            var section = Configuration.GetSection("jwt");
+            section.Bind(settings);
+            services.Configure<JwtSettings>(section);
+
+            services.AddAuthorization(x => x.AddPolicy("HasAdminRole", p => p.RequireRole("admin")));
+
+            services.AddAuthentication(options => {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(jwt => {
+                    var key = Encoding.ASCII.GetBytes(settings.Key);
+
+                    jwt.SaveToken = true;
+                    jwt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true, // this will validate the 3rd part of the jwt token using the secret that we added in the appsettings and verify we have generated the jwt token
+                        IssuerSigningKey = new SymmetricSecurityKey(key), // Add the secret key to our Jwt encryption
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        RequireExpirationTime = false,
+                        ValidateLifetime = true
+                    };
+                });
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -48,7 +80,9 @@ namespace ProductManager.Web
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.ConfigureExceptionHandler();
+
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             if (!env.IsDevelopment())
             {
@@ -56,6 +90,10 @@ namespace ProductManager.Web
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
