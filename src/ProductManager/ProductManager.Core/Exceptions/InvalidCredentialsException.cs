@@ -2,7 +2,7 @@
 
 namespace ProductManager.Core.Exceptions
 {
-    public class InvalidCredentialsException : Exception
+    public class InvalidCredentialsException : DomainException
     {
         public InvalidCredentialsException(string message) : base(message)
         {

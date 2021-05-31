@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProductManager.Core.Exceptions
 {
-    public class InvalidEmailException : Exception
+    public class InvalidEmailException : DomainException
     {
         public InvalidEmailException(string message) : base(message)
         {

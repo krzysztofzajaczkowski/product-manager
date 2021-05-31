@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProductManager.Core.Exceptions
 {
-    public class InvalidRoleNameException : Exception
+    public class InvalidRoleNameException : DomainException
     {
         public InvalidRoleNameException(string message): base(message)
         {
