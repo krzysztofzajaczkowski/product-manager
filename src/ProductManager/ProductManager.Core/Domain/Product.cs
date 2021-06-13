@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProductManager.Core.Domain
 {
-    class Product
+    public class Product
     {
-        public WarehouseProduct WarehouseProduct { get; }
-        public SalesProduct SalesProduct { get; }
-        public CatalogProduct CatalogProduct { get; }
+        public WarehouseProduct WarehouseProduct { get; protected set; }
+        public SalesProduct SalesProduct { get; protected set; }
+        public CatalogProduct CatalogProduct { get; protected set; }
 
         public Product(WarehouseProduct warehouseProduct, SalesProduct salesProduct, CatalogProduct catalogProduct)
         {

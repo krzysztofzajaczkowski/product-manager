@@ -11,9 +11,9 @@ namespace ProductManager.Core.Domain
     public class WarehouseProduct : Entity
     {
         private readonly Regex _alphanumericRegex = new Regex(@"^[a-zA-Z0-9]+$");
-        public string Sku { get; set; }
-        public int Stock { get; set; }
-        public double Weight { get; set; }
+        public string Sku { get; protected set; }
+        public int Stock { get; protected set; }
+        public double Weight { get; protected set; }
 
         public WarehouseProduct(string sku, int stock, double weight)
         {
