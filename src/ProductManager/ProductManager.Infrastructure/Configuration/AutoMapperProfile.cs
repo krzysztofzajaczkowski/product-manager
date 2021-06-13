@@ -48,6 +48,10 @@ namespace ProductManager.Infrastructure.Configuration
             CreateMap<WarehouseProductDto, Product>()
                 .ForPath(x => x.WarehouseProduct.Weight, x => x.MapFrom(y => y.Weight))
                 .ForPath(x => x.WarehouseProduct.Stock, x => x.MapFrom(y => y.Stock));
+
+            CreateMap<CatalogProductDto, Product>()
+                .ForPath(x => x.CatalogProduct.Name, x => x.MapFrom(y => y.Name))
+                .ForPath(x => x.CatalogProduct.Description, x => x.MapFrom(y => y.Description));
         }
     }
 }
