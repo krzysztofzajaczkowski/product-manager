@@ -209,5 +209,42 @@ namespace ProductManager.UnitTests
             product.CatalogProduct.Name.Should().Be(newProductName);
             product.CatalogProduct.Description.Should().Be(newDescription);
         }
+
+        [Fact]
+        public void MappingSalesProductDtoToProduct_ShouldUpdateCatalogProperties()
+        {
+            // Arrange
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var newCost = 12;
+            var taxPercentage = 23;
+            var newTaxPercentage = 8;
+            var netPrice = 15;
+            var newNetPrice = 17;
+
+            var product = new Product(catalogId, sku, productName, description, warehouseId, stock, weight, salesId,
+                cost, taxPercentage, netPrice);
+            var salesProductDto = new SalesProductDto
+            {
+                Id = warehouseId,
+                Sku = sku,
+                Cost = newCost,
+                TaxPercentage = newTaxPercentage,
+                NetPrice = newNetPrice
+            };
+
+            _mapper.Map(salesProductDto, product);
+
+            product.SalesProduct.Cost.Should().Be(newCost);
+            product.SalesProduct.TaxPercentage.Should().Be(newTaxPercentage);
+            product.SalesProduct.NetPrice.Should().Be(newNetPrice);
+        }
     }
 }
