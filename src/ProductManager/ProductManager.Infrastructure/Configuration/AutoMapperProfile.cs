@@ -45,6 +45,9 @@ namespace ProductManager.Infrastructure.Configuration
                     x => x.MapFrom(y =>
                         new WarehouseProduct(y.WarehouseId != Guid.Empty ? y.WarehouseId : Guid.NewGuid(), y.Sku, y.Stock, y.Weight)));
 
+            CreateMap<WarehouseProductDto, Product>()
+                .ForPath(x => x.WarehouseProduct.Weight, x => x.MapFrom(y => y.Weight))
+                .ForPath(x => x.WarehouseProduct.Stock, x => x.MapFrom(y => y.Stock));
         }
     }
 }
