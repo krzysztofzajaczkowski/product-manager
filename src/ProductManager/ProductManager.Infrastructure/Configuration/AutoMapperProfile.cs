@@ -57,6 +57,31 @@ namespace ProductManager.Infrastructure.Configuration
                 .ForPath(x => x.SalesProduct.Cost, x => x.MapFrom(y => y.Cost))
                 .ForPath(x => x.SalesProduct.TaxPercentage, x => x.MapFrom(y => y.TaxPercentage))
                 .ForPath(x => x.SalesProduct.NetPrice, x => x.MapFrom(y => y.NetPrice));
+
+            CreateMap<Product, ProductBlockDto>()
+                .ForMember(x => x.Sku, x => x.MapFrom(y => y.CatalogProduct.Sku))
+                .ForMember(x => x.Name, x => x.MapFrom(y => y.CatalogProduct.Name))
+                .ForMember(x => x.NetPrice, x => x.MapFrom(y => y.SalesProduct.NetPrice))
+                .ForMember(x => x.Stock, x => x.MapFrom(y => y.WarehouseProduct.Stock));
+
+            CreateMap<ProductDto, ProductBlockDto>();
+
+            CreateMap<CreateProductDto, ProductDto>()
+                .ForMember(x => x.Sku, x => x.MapFrom(y => y.Sku))
+                .ForMember(x => x.Name, x => x.MapFrom(y => y.Name))
+                .ForMember(x => x.Description, x => x.MapFrom(y => y.Description))
+                .ForMember(x => x.Cost, x => x.MapFrom(y => 1))
+                .ForMember(x => x.NetPrice, x => x.MapFrom(y => 2))
+                .ForMember(x => x.TaxPercentage, x => x.MapFrom(y => 0))
+                .ForMember(x => x.Stock, x => x.MapFrom(y => 0))
+                .ForMember(x => x.Weight, x => x.MapFrom(y => 0));
+
+            CreateMap<UpdateCatalogProductDto, CatalogProductDto>();
+
+            CreateMap<UpdateWarehouseProductDto, WarehouseProductDto>();
+
+            CreateMap<UpdateSalesProductDto, SalesProductDto>();
+
         }
     }
 }

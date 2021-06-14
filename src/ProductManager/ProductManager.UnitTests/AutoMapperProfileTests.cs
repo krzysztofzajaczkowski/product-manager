@@ -246,5 +246,216 @@ namespace ProductManager.UnitTests
             product.SalesProduct.TaxPercentage.Should().Be(newTaxPercentage);
             product.SalesProduct.NetPrice.Should().Be(newNetPrice);
         }
+
+        [Fact]
+        public void MappingProductToProductBlockDto_CorrespondingPropertiesShouldBeEqual()
+        {
+            // Arrange
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var product = new Product(catalogId, sku, productName, description, warehouseId, stock, weight,
+                salesId, cost, taxPercentage, netPrice);
+            var productBlockDto = new ProductBlockDto
+            {
+                Name = productName,
+                Sku = sku,
+                NetPrice = netPrice,
+                Stock = stock
+            };
+
+            // Act
+            var mappedProductDto = _mapper.Map<ProductBlockDto>(product);
+
+            // Assert
+            mappedProductDto.Should().BeEquivalentTo(productBlockDto);
+        }
+
+        [Fact]
+        public void MappingProductDtoToProductBlockDto_CorrespondingPropertiesShouldBeEqual()
+        {
+            // Arrange
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var productDto = new ProductDto
+            {
+                Name = productName,
+                Sku = sku,
+                Cost = cost,
+                NetPrice = netPrice,
+                TaxPercentage = taxPercentage,
+                Weight = weight,
+                Description = description,
+                Stock = stock,
+            };
+            var productBlockDto = new ProductBlockDto
+            {
+                Name = productName,
+                Sku = sku,
+                NetPrice = netPrice,
+                Stock = stock
+            };
+
+            // Act
+            var mappedProductDto = _mapper.Map<ProductBlockDto>(productDto);
+
+            // Assert
+            mappedProductDto.Should().BeEquivalentTo(productBlockDto);
+        }
+
+        [Fact]
+        public void MappingCreateProductDtoToProductDto_CorrespondingPropertiesShouldBeEqual()
+        {
+            // Arrange
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var createProductDto = new CreateProductDto
+            {
+                Sku = sku,
+                Name = productName,
+                Description = description
+            };
+            var productDto = new ProductDto
+            {
+                Name = productName,
+                Sku = sku,
+                Cost = 1,
+                NetPrice = 2,
+                TaxPercentage = 0,
+                Weight = 0,
+                Description = description,
+                Stock = 0,
+            };
+
+            // Act
+            var mappedProductDto = _mapper.Map<ProductDto>(createProductDto);
+
+            // Assert
+            mappedProductDto.Should().BeEquivalentTo(productDto);
+        }
+
+        [Fact]
+        public void MappingUpdateCatalogProductDtoToCatalogProductDto_CorrespondingPropertiesShouldBeEqual()
+        {
+            // Arrange
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var id = Guid.NewGuid();
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var updateCatalogProductDto = new UpdateCatalogProductDto
+            {
+                Id = id,
+                Sku = sku,
+                Name = productName,
+                Description = description
+            };
+            var catalogProductDto = new CatalogProductDto
+            {
+                Id = id,
+                Sku = sku,
+                Name = productName,
+                Description = description
+            };
+
+            // Act
+            var mappedProductDto = _mapper.Map<CatalogProductDto>(updateCatalogProductDto);
+
+            // Assert
+            mappedProductDto.Should().BeEquivalentTo(catalogProductDto);
+        }
+
+        [Fact]
+        public void MappingUpdateWarehouseProductDtoToWarehouseProductDto_CorrespondingPropertiesShouldBeEqual()
+        {
+            // Arrange
+            var sku = "123";
+            var id = Guid.NewGuid();
+            var stock = 12;
+            var weight = 2.5;
+
+            var updateWarehouseProductDto = new UpdateWarehouseProductDto
+            {
+                Id = id,
+                Sku = sku,
+                Stock = stock,
+                Weight = weight
+            };
+            var warehouseProductDto = new WarehouseProductDto
+            {
+                Id = id,
+                Sku = sku,
+                Stock = stock,
+                Weight = weight
+            };
+
+            // Act
+            var mappedProductDto = _mapper.Map<WarehouseProductDto>(updateWarehouseProductDto);
+
+            // Assert
+            mappedProductDto.Should().BeEquivalentTo(warehouseProductDto);
+        }
+
+        [Fact]
+        public void MappingUpdateSalesProductDtoToSalesProductDto_CorrespondingPropertiesShouldBeEqual()
+        {
+            // Arrange
+            var sku = "123";
+            var id = Guid.NewGuid();
+            var cost = 10;
+            var netPrice = 15;
+            var taxPercentage = 23;
+
+            var updateSalesProductDto = new UpdateSalesProductDto
+            {
+                Id = id,
+                Sku = sku,
+                NetPrice = netPrice,
+                TaxPercentage = taxPercentage,
+                Cost = cost
+            };
+            var salesProductDto = new SalesProductDto
+            {
+                Id = id,
+                Sku = sku,
+                NetPrice = netPrice,
+                TaxPercentage = taxPercentage,
+                Cost = cost
+            };
+
+            // Act
+            var mappedProductDto = _mapper.Map<SalesProductDto>(updateSalesProductDto);
+
+            // Assert
+            mappedProductDto.Should().BeEquivalentTo(salesProductDto);
+        }
     }
 }
