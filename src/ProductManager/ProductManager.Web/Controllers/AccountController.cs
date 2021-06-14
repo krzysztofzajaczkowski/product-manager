@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManager.Core.Exceptions;
 using ProductManager.Infrastructure.Services;
 using ProductManager.Web.Requests;
 
@@ -43,8 +44,16 @@ namespace ProductManager.Web.Controllers
         public async Task<IActionResult> RegisterAsync(RegisterRequest request)
         {
             var guid = Guid.NewGuid();
-            await _userService.RegisterAsync(guid,
-                request.Email, request.Name, request.Password, request.Role);
+            try
+            {
+                await _userService.RegisterAsync(guid,
+                    request.Email, request.Name, request.Password, request.Role);
+            }
+            catch (NotFoundException e)
+            {
+                // Test Server does not implement CompleteAsync, which is required to allow for 404 response from exception middleware
+                return NotFound();
+            }
 
             return Created("/account", guid);
         }
@@ -52,7 +61,15 @@ namespace ProductManager.Web.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(LoginRequest request)
         {
-            return Ok(await _userService.LoginAsync(request.Email, request.Password, request.Role));
+            try
+            {
+                return Ok(await _userService.LoginAsync(request.Email, request.Password, request.Role));
+            }
+            catch (NotFoundException e)
+            {
+                // Test Server does not implement CompleteAsync, which is required to allow for 404 response from exception middleware
+                return NotFound();
+            }
         }
     }
 }

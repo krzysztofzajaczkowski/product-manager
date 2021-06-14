@@ -97,7 +97,7 @@ namespace ProductManager.IntegrationTests
                 Password = "secret"
             });
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
