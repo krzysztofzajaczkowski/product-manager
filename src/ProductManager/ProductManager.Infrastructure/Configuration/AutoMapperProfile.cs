@@ -52,11 +52,6 @@ namespace ProductManager.Infrastructure.Configuration
             CreateMap<CatalogProductDto, Product>()
                 .ForPath(x => x.CatalogProduct.Name, x => x.MapFrom(y => y.Name))
                 .ForPath(x => x.CatalogProduct.Description, x => x.MapFrom(y => y.Description));
-
-            CreateMap<SalesProductDto, Product>()
-                .ForPath(x => x.SalesProduct.Cost, x => x.MapFrom(y => y.Cost))
-                .ForPath(x => x.SalesProduct.TaxPercentage, x => x.MapFrom(y => y.TaxPercentage))
-                .ForPath(x => x.SalesProduct.NetPrice, x => x.MapFrom(y => y.NetPrice));
         }
     }
 }
