@@ -12,10 +12,6 @@ namespace ProductManager.Core.Domain
         public SalesProduct SalesProduct { get; protected set; }
         public CatalogProduct CatalogProduct { get; protected set; }
 
-        protected Product()
-        {
-            
-        }
         public Product(WarehouseProduct warehouseProduct, SalesProduct salesProduct, CatalogProduct catalogProduct)
         {
             WarehouseProduct = warehouseProduct;
