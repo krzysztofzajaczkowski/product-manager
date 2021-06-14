@@ -139,40 +139,5 @@ namespace ProductManager.UnitTests
             mappedProduct.WarehouseProduct.Id.Should().NotBe(Guid.Empty);
             mappedProduct.SalesProduct.Id.Should().NotBe(Guid.Empty);
         }
-
-        [Fact]
-        public void MappingWarehouseProductDtoToProduct_ShouldUpdateWarehouseProperties()
-        {
-            // Arrange
-            var catalogId = Guid.NewGuid();
-            var warehouseId = Guid.NewGuid();
-            var salesId = Guid.NewGuid();
-            var sku = "123";
-            var productName = "product name";
-            var description = "desc";
-            var stock = 12;
-            var newStock = 14;
-            var weight = 2.5;
-            var newWeight = 4.5;
-            var cost = 10;
-            var taxPercentage = 23;
-            var netPrice = 15;
-
-            var product = new Product(catalogId, sku, productName, description, warehouseId, stock, weight,
-                salesId, cost, taxPercentage, netPrice);
-
-            var warehouseDto = new WarehouseProductDto
-            {
-                Sku = sku,
-                Id = warehouseId,
-                Stock = newStock,
-                Weight = newWeight
-            };
-
-            _mapper.Map(warehouseDto, product);
-
-            product.WarehouseProduct.Stock.Should().Be(newStock);
-            product.WarehouseProduct.Weight.Should().Be(newWeight);
-        }
     }
 }
