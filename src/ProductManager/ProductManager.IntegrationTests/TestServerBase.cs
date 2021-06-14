@@ -38,6 +38,9 @@ namespace ProductManager.IntegrationTests
                 {
                     services.RemoveAll(typeof(IUserRepository));
                     services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+
+                    services.RemoveAll(typeof(IProductRepository));
+                    services.AddSingleton<IProductRepository, InMemoryProductRepository>();
                 });
 
             var server = new TestServer(webHostBuilder);
