@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProductManager.Core.Exceptions
 {
-    public class UserNotFoundException : NotFoundException
+    public class NotFoundException : DomainException
     {
-        public UserNotFoundException(string message) : base(message)
+        public NotFoundException(string message) : base(message)
         {
+
         }
     }
 }

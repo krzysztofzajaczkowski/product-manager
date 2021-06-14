@@ -1,6 +1,6 @@
 ﻿namespace ProductManager.Core.Exceptions
 {
-    public class ProductNotFoundException : DomainException
+    public class ProductNotFoundException : NotFoundException
     {
         public ProductNotFoundException(string message) : base(message)
         {

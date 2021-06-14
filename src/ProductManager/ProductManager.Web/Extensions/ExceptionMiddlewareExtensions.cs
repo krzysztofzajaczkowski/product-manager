@@ -18,7 +18,10 @@ namespace ProductManager.Web.Extensions
         {
             app.UseExceptionHandler(appError =>
             {
-                ErrorResponse error;
+                var error = new ErrorResponse
+                {
+                    Message = "Bad Request"
+                };
                 appError.Run(async context =>
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -34,22 +37,34 @@ namespace ProductManager.Web.Extensions
                         return;
                     }
 
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-                    if (contextFeature.Error is DomainException)
+                    if (contextFeature.Error != null)
                     {
-
                         error = new ErrorResponse
                         {
                             Message = contextFeature.Error.Message
                         };
+
+                        // Test Server does not implement CompleteAsync, which is required to allow for 404 response from exception middleware
+                        if (contextFeature.Error is NotFoundException)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                            await context.Response.WriteAsJsonAsync(error);
+                            await context.Response.CompleteAsync();
+                            return;
+                        }
+
+                        if (contextFeature.Error is DomainException)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            await context.Response.WriteAsJsonAsync(error);
+                            return;
+
+                        }
+
+                        
                     }
 
-                    await context.Response.WriteAsJsonAsync(new ErrorResponse
-                    {
-                        Message = "Bad Request"
-                    });
-
+                    await context.Response.WriteAsJsonAsync(error);
                 });
             });
         }
