@@ -20,6 +20,9 @@ namespace ProductManager.Infrastructure.Repositories
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<Product>> GetAllAsync() =>
+            await Task.FromResult(_products);
+
         public async Task<Product> GetProductAsync(string sku) =>
             await Task.FromResult(_products.SingleOrDefault(x => x.CatalogProduct.Sku == sku));
 

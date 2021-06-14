@@ -28,6 +28,94 @@ namespace ProductManager.IntegrationTests
         }
 
         [Fact]
+        public async Task GettingAllProducts_WhenNoProducts_ShouldReturnEmptyList()
+        {
+            // Act
+            var retrievedProductDtos = await _sut.GetAllAsync();
+
+            // Assert
+            retrievedProductDtos.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GettingAllProducts_WhenProductsExist_ReturnedListShouldNotBeEmpty()
+        {
+            // Arrange
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+            await _sut.AddAsync(productDto);
+
+            // Act
+            var retrievedProductDtos = await _sut.GetAllAsync();
+
+            // Assert
+            retrievedProductDtos.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task GettingAllProducts_WhenProductsExist_ShouldReturnListWithProductProjections()
+        {
+            // Arrange
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+            await _sut.AddAsync(productDto);
+
+            // Act
+            var retrievedProductDtos = await _sut.GetAllAsync();
+
+            // Assert
+            retrievedProductDtos.First().Should().BeEquivalentTo(productDto);
+        }
+
+        [Fact]
         public void GettingProduct_WhenProductDoesNotExist_ShouldThrowProductNotFoundException()
         {
             // Arrange

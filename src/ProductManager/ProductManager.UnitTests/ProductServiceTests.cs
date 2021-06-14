@@ -31,6 +31,116 @@ namespace ProductManager.UnitTests
         }
 
         [Fact]
+        public async Task GettingAllProducts_WhenNoProducts_ShouldReturnEmptyList()
+        {
+            // Arrange
+            var repository = new Mock<IProductRepository>();
+            var sut = new ProductService(_mapper, repository.Object);
+
+            repository.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Product>());
+
+            // Act
+            var retrievedProductDtos = await sut.GetAllAsync();
+
+            // Assert
+            retrievedProductDtos.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GettingAllProducts_WhenProductsExist_ReturnedListShouldNotBeEmpty()
+        {
+            // Arrange
+            var repository = new Mock<IProductRepository>();
+            var sut = new ProductService(_mapper, repository.Object);
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var product = new Product(catalogId, sku, productName, description, warehouseId, stock, weight, salesId,
+                cost, taxPercentage, netPrice);
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+
+            repository.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Product>
+            {
+                product
+            });
+
+            // Act
+            var retrievedProductDtos = await sut.GetAllAsync();
+
+            // Assert
+            retrievedProductDtos.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task GettingAllProducts_WhenProductsExist_ShouldReturnListWithProductProjections()
+        {
+            // Arrange
+            var repository = new Mock<IProductRepository>();
+            var sut = new ProductService(_mapper, repository.Object);
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var product = new Product(catalogId, sku, productName, description, warehouseId, stock, weight, salesId,
+                cost, taxPercentage, netPrice);
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+
+            repository.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Product>
+            {
+                product
+            });
+
+            // Act
+            var retrievedProductDtos = await sut.GetAllAsync();
+
+            // Assert
+            retrievedProductDtos.First().Should().BeEquivalentTo(productDto);
+        }
+
+        [Fact]
         public void GettingProduct_WhenProductDoesNotExist_ShouldThrowProductNotFoundException()
         {
             // Arrange

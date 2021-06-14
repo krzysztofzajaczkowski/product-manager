@@ -15,5 +15,6 @@ namespace ProductManager.Infrastructure.Services
         Task UpdateWarehouseAsync(WarehouseProductDto warehouseProductDto);
         Task UpdateCatalogAsync(CatalogProductDto catalogProductDto);
         Task UpdateSalesAsync(SalesProductDto salesProductDto);
+        Task<List<ProductDto>> GetAllAsync();
     }
 }

@@ -13,5 +13,6 @@ namespace ProductManager.Core.Repositories
         Task AddAsync(Product product);
         Task UpdateAsync(Product updatedProduct);
         Task DeleteAsync(string sku);
+        Task<IEnumerable<Product>> GetAllAsync();
     }
 }

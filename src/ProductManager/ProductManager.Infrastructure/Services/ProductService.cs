@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using ProductManager.Core.Domain;
 using ProductManager.Core.Exceptions;
@@ -27,6 +29,13 @@ namespace ProductManager.Infrastructure.Services
                 throw new ProductAlreadyExistsException($"Product with sku {product.Sku} already exists!");
             }
             await _productRepository.AddAsync(mappedProduct);
+        }
+
+        public async Task<List<ProductDto>> GetAllAsync()
+        {
+            var products = await _productRepository.GetAllAsync();
+
+            return _mapper.Map<List<ProductDto>>(products.ToList());
         }
 
         public async Task<ProductDto> GetAsync(string sku)
