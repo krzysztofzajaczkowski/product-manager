@@ -15,6 +15,11 @@ namespace ProductManager.Core.Domain
         public string Name { get; protected set; }
         public string Description { get; protected set; }
 
+        protected CatalogProduct()
+        {
+            
+        }
+
         public CatalogProduct(string sku, string name, string description)
         {
             Id = Guid.NewGuid();

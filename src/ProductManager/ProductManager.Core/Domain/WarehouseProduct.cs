@@ -15,6 +15,10 @@ namespace ProductManager.Core.Domain
         public int Stock { get; protected set; }
         public double Weight { get; protected set; }
 
+        protected WarehouseProduct()
+        {
+            
+        }
         public WarehouseProduct(string sku, int stock, double weight)
         {
             Id = Guid.NewGuid();

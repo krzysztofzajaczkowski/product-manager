@@ -16,6 +16,10 @@ namespace ProductManager.Core.Domain
         public int TaxPercentage { get; protected set; }
         public decimal NetPrice { get; protected set; }
 
+        protected SalesProduct()
+        {
+            
+        }
         public SalesProduct(string sku, decimal cost, int taxPercentage, decimal netPrice)
         {
             Id = new Guid();
