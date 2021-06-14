@@ -18,6 +18,9 @@ namespace ProductManager.Infrastructure.Repositories
         {
             _roles.Add(new Role(Guid.NewGuid(), "user"));
             _roles.Add(new Role(Guid.NewGuid(), "admin"));
+            _roles.Add(new Role(Guid.NewGuid(), "CatalogManager"));
+            _roles.Add(new Role(Guid.NewGuid(), "SalesManager"));
+            _roles.Add(new Role(Guid.NewGuid(), "WarehouseManager"));
 
             _users.Add(new User(Guid.NewGuid(), "User", "user@user.com", "secret",
                 _roles.SingleOrDefault(r => r.Name == "user")));
