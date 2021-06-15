@@ -1,4 +1,6 @@
 using System.Text;
+using ElectronNET.API;
+using ElectronNET.API.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +15,7 @@ using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Services;
 using ProductManager.Infrastructure.Settings;
 using ProductManager.Web.Extensions;
+using ProductManager.Web.Helpers;
 
 namespace ProductManager.Web
 {
@@ -69,6 +72,7 @@ namespace ProductManager.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            ElectronBootstrap();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -114,6 +118,18 @@ namespace ProductManager.Web
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });
+        }
+
+        public async void ElectronBootstrap()
+        {
+            var mainWindow = await Electron.WindowManager.CreateWindowAsync();
+            mainWindow.OnReadyToShow += () =>
+            {
+                mainWindow.Show();
+            };
+            mainWindow.SetTitle("Product Manager");
+
+            Electron.Menu.SetApplicationMenu(ElectronMenuHelper.GetMenu());
         }
     }
 }
