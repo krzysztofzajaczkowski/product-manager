@@ -34,6 +34,26 @@ namespace ProductManager.Web.Controllers
             return Ok(dtos);
         }
 
+        [Authorize]
+        [HttpGet("browse/{sku}")]
+        public async Task<IActionResult> GetAsync(string sku)
+        {
+            ProductDto product;
+            try
+            {
+                product = await _productService.GetAsync(sku);
+            }
+            catch (NotFoundException e)
+            {
+                // Test Server does not implement CompleteAsync, which is required to allow for 404 response from exception middleware
+                return NotFound();
+            }
+
+            var dto = _mapper.Map<ProductDto>(product);
+
+            return Ok(dto);
+        }
+
         [Authorize(Roles = "CatalogManager")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync(CreateProductDto dto)

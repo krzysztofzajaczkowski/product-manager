@@ -183,6 +183,162 @@ namespace ProductManager.IntegrationTests
         }
 
         [Fact]
+        public async Task CallingGet_WhenNotAuthenticated_ShouldReturnUnauthorized()
+        {
+            // Arrange/Act
+            var sku = "123";
+            var response = await _client.GetAsync($"Products/Browse/{sku}");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndProductExists_ShouldReturnOk()
+        {
+            // Arrange
+            var svc = _server.Services.GetRequiredService<IProductService>();
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+            await svc.AddAsync(productDto);
+
+            await RegisterAsync("NewUser", "newuser@email.com", "password");
+            await LoginAsync("newuser@email.com", "password");
+
+            // Act
+            var response = await _client.GetAsync($"Products/Browse/{sku}");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndProductDoesNotExist_ShouldReturnNotFound()
+        {
+            // Arrange
+            var sku = "123";
+            await RegisterAsync("NewUser", "newuser@email.com", "password");
+            await LoginAsync("newuser@email.com", "password");
+
+            // Act
+            var response = await _client.GetAsync($"Products/Browse/{sku}");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndProductExists_ShouldReturnProductDto()
+        {
+            // Arrange
+            var svc = _server.Services.GetRequiredService<IProductService>();
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+            await svc.AddAsync(productDto);
+
+            await RegisterAsync("NewUser", "newuser@email.com", "password");
+            await LoginAsync("newuser@email.com", "password");
+
+            // Act
+            var product = await _client.GetFromJsonAsync<ProductDto>($"Products/Browse/{sku}");
+
+            // Assert
+            product.Should().BeEquivalentTo(productDto);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndWithProducts_ShouldReturnListOfProductBlockDtosEquivalentToExistingProducts()
+        {
+            // Arrange
+            var svc = _server.Services.GetRequiredService<IProductService>();
+            var catalogId = Guid.NewGuid();
+            var warehouseId = Guid.NewGuid();
+            var salesId = Guid.NewGuid();
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+            var stock = 12;
+            var weight = 2.5;
+            var cost = 10;
+            var taxPercentage = 23;
+            var netPrice = 15;
+
+            var productDto = new ProductDto
+            {
+                CatalogId = catalogId,
+                WarehouseId = warehouseId,
+                SalesId = salesId,
+                Name = productName,
+                Cost = cost,
+                NetPrice = netPrice,
+                Description = description,
+                Sku = sku,
+                Stock = stock,
+                TaxPercentage = taxPercentage,
+                Weight = weight
+            };
+            await svc.AddAsync(productDto);
+            var productsFromService = await svc.GetAllAsync();
+            var mappedProductBlocks = _mapper.Map<List<ProductBlockDto>>(productsFromService);
+            await RegisterAsync("NewUser", "newuser@email.com", "password");
+            await LoginAsync("newuser@email.com", "password");
+
+            // Act
+            var products = await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/Browse");
+
+            // Assert
+            products.Should().BeEquivalentTo(mappedProductBlocks);
+        }
+
+        [Fact]
         public async Task CallingCreate_WhenNotAuthenticated_ShouldReturnUnauthorized()
         {
             // Arrange/Act
