@@ -19,7 +19,7 @@ namespace ProductManager.Web.Helpers
                     Click = () =>
                     {
                         Electron.WindowManager.BrowserWindows.First()
-                            .LoadURL($"http://localhost:{BridgeSettings.WebPort}/Login");
+                            .LoadURL($"http://localhost:{BridgeSettings.WebPort}/login");
                     }
                 },
                 new MenuItem
@@ -28,7 +28,7 @@ namespace ProductManager.Web.Helpers
                     Click = () =>
                     {
                         Electron.WindowManager.BrowserWindows.First()
-                            .LoadURL($"http://localhost:{BridgeSettings.WebPort}/Logout");
+                            .LoadURL($"http://localhost:{BridgeSettings.WebPort}/logout");
                     }
                 },
                 new MenuItem
