@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 import { CreateProductDto } from './models/createProductDto';
 import { ProductBlockDto } from './models/productBlockDto';
 import { ProductDto } from './models/productDto';
@@ -17,7 +18,8 @@ export class ProductService {
 
   constructor(
     private httpClient: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string
+    @Inject('BASE_URL') private baseUrl: string,
+    private authService: AuthService
   ) { }
 
   browse(): Observable<any> {
@@ -35,6 +37,18 @@ export class ProductService {
       description: description
     };
     return this.httpClient.post(this.baseUrl + 'products/create', createProductDto);
+  }
+
+  canUpdateCatalog() {
+    this.authService.role == "CatalogManager";
+  }
+
+  canUpdateSales() {
+    this.authService.role == "SalesManager";
+  }
+
+  canUpdateWarehouse() {
+    this.authService.role == "WarehouseManager";
   }
 
   updateCatalog(id: string, name: string, sku: string, description: string) : Observable<any> {
