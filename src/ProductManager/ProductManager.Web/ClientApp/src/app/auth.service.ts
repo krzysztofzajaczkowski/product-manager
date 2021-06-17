@@ -14,7 +14,7 @@ export class AuthService {
 
   constructor(
     private httpClient: HttpClient,
-    @Inject(BASE_URL) private baseUrl: string
+    @Inject('BASE_URL') private baseUrl: string
     ) { }
 
     login(email: string, password: string, role: string): Observable<any> {
