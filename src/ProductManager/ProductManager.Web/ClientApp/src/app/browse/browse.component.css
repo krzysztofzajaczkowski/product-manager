@@ -1,0 +1,20 @@
+.items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.items-list__header {
+  display: flex;
+}
+
+.items-list__header p {
+  width: 10vw;
+}
+
+.items-list__item {
+  display: flex;
+}
+
+.items-list__item p {
+  width: 10vw;
+}

@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -16,7 +16,11 @@ import { LogoutComponent } from './logout/logout.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
 import { AuthService } from './auth.service';
+import { BrowseComponent } from './browse/browse.component';
+import { AuthGuardService } from './auth-guard.service';
 import { ProductService } from './product.service';
+import { TokenInterceptorService } from './token-interceptor.service';
+import { ProductEditComponent } from './product-edit/product-edit.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +31,8 @@ import { ProductService } from './product.service';
     FetchDataComponent,
     LoginComponent,
     LogoutComponent,
+    BrowseComponent,
+    ProductEditComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -37,7 +43,9 @@ import { ProductService } from './product.service';
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'login', component: LoginComponent },
-      { path: 'logout', component: LogoutComponent }
+      { path: 'logout', component: LogoutComponent },
+      { path: 'browse', component: BrowseComponent, canActivate: [AuthGuardService] },
+      { path: 'product/edit/:sku', component: ProductEditComponent, canActivate: [AuthGuardService] }
     ]),
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -49,7 +57,13 @@ import { ProductService } from './product.service';
     MatChipsModule
   ],
   providers: [
-    AuthService
+    AuthService,
+    ProductService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptorService,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

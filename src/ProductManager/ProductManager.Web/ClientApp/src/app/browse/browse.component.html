@@ -1,0 +1,32 @@
+<div>
+  <div class="items-list">
+    <div class="items-list__header">
+      <p>Sku</p>
+      <p>Name</p>
+      <p>Stock</p>
+      <p>Net price</p>
+      <p>Actions</p>
+    </div>
+    <div *ngFor="let item of items" class="items-list__item">
+      <div>
+        <p>{{ item.sku }}</p>
+      </div>
+      <div>
+        <p>{{ item.name }}</p>
+      </div>
+      <div>
+        <p>{{ item.stock }}</p>
+      </div>
+      <div>
+        <p>{{ item.netPrice }}</p>
+      </div>
+      <div>
+        <p>
+          <a [routerLink]="['/product/edit', item.sku]">
+            Edit
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
