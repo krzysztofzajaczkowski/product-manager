@@ -39,16 +39,16 @@ export class ProductService {
     return this.httpClient.post(this.baseUrl + 'products/create', createProductDto);
   }
 
-  canUpdateCatalog() {
-    this.authService.role == "CatalogManager";
+  get canUpdateCatalog() {
+    return this.authService.role == "CatalogManager";
   }
 
-  canUpdateSales() {
-    this.authService.role == "SalesManager";
+  get canUpdateSales() {
+    return this.authService.role == "SalesManager";
   }
 
-  canUpdateWarehouse() {
-    this.authService.role == "WarehouseManager";
+  get canUpdateWarehouse() {
+    return this.authService.role == "WarehouseManager";
   }
 
   updateCatalog(id: string, name: string, sku: string, description: string) : Observable<any> {
