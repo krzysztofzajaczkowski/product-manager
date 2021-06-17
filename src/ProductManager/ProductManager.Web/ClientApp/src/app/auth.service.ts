@@ -25,4 +25,26 @@ export class AuthService {
       };
       return this.httpClient.post<JwtDto>(this.baseUrl + 'account/login', loginRequest)
     }
+
+    setLoginItems(accessToken, role) {
+      localStorage.setItem("access_token", accessToken);
+      localStorage.setItem("user_role", role);
+    }
+
+    unsetLoginItems() {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+    }
+
+    get authorizationToken() {
+      return localStorage.getItem("access_token");
+    }
+
+    get role() {
+      return localStorage.getItem("user_role");
+    }
+
+    get isLoggedIn() {
+      return localStorage.getItem("access_token") != null;
+    }
 }
