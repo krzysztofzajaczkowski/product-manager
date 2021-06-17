@@ -17,7 +17,7 @@ export class ProductService {
 
   constructor(
     private httpClient: HttpClient,
-    @Inject(BASE_URL) private baseUrl: string
+    @Inject('BASE_URL') private baseUrl: string
   ) { }
 
   browse(): Observable<any> {
