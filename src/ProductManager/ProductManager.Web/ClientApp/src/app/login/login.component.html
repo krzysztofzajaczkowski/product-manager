@@ -1,1 +1,42 @@
-<p>login works!</p>
+<div>
+  <form [formGroup]="loginForm" class="flex-form">
+
+    <h3>Login to your account</h3>
+
+    <hr>
+
+    <div class="error-message">
+      {{ error }}
+    </div>
+
+    <hr>
+
+    <div>
+      <mat-form-field>
+        <input matInput placeholder="Email" formControlName="email">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Password" formControlName="password">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-select formControlName="role" placeholder="Role">
+          <mat-option value="CatalogManager">Catalog manager</mat-option>
+          <mat-option value="SalesManager">Sales manager</mat-option>
+          <mat-option value="WarehouseManager">Warehouse manager</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <button [disabled]="!formValid" mat-raised-button color="primary" (click)="submitLogin()">Login</button>
+    </div>
+
+  </form>
+
+</div>
