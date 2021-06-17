@@ -16,3 +16,18 @@ html {
 .box-shadow {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.abs {
+  position: absolute;
+  top: 5;
+  left: 15px;
+}
+
+.small {
+  margin-top: -10px;
+}
