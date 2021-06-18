@@ -41,9 +41,7 @@ import { ProductAddComponent } from './product-add/product-add.component';
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: '', component: BrowseComponent, pathMatch: 'full', canActivate: [AuthGuardService] },
       { path: 'login', component: LoginComponent },
       { path: 'logout', component: LogoutComponent },
       { path: 'browse', component: BrowseComponent, canActivate: [AuthGuardService] },
