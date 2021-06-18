@@ -1,20 +1,24 @@
-.items-list {
+.browse {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.items-list__header {
-  display: flex;
+.browse__header {
+  align-self: flex-end;
 }
 
-.items-list__header p {
-  width: 10vw;
+.mat-row .mat-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  padding: 0 15px;
 }
 
-.items-list__item {
-  display: flex;
+.mat-row:hover .mat-cell {
+  border-color: currentColor;
 }
 
-.items-list__item p {
-  width: 10vw;
+.smaller-button {
+  transform: scale(0.7);
 }
