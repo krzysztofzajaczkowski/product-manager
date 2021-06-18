@@ -1,1 +1,78 @@
-<p>product-edit works with {{ sku }}!</p>
+<div class="test">
+  <form [formGroup]="productForm">
+
+    <div class="error-message">
+      {{ error }}
+    </div>
+
+    <mat-tab-group>
+      <mat-tab label="Catalog">
+        <div formGroupName="catalog" class="flex-form">
+          <div>
+            <mat-form-field>
+              <input matInput placeholder="Name" formControlName="name">
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field>
+              <input matInput placeholder="Description" formControlName="description">
+            </mat-form-field>
+          </div>
+
+          <div *ngIf="canUpdateCatalog">
+            <button [disabled]="!(productCatalogValid)" mat-raised-button color="primary" (click)="updateCatalog()">Update</button>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Warehouse">
+        <div formGroupName="warehouse" class="flex-form">
+          <div>
+            <mat-form-field>
+              <input type="number" matInput placeholder="Stock" formControlName="stock">
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field>
+              <input type="number" matInput placeholder="Weight" formControlName="weight">
+            </mat-form-field>
+          </div>
+
+          <div *ngIf="canUpdateWarehouse">
+            <button [disabled]="!(productWarehouseValid)" mat-raised-button color="primary" (click)="updateWarehouse()">Update</button>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Sales">
+        <div formGroupName="sales" class="flex-form">
+          <div>
+            <mat-form-field>
+              <input type="number" matInput placeholder="Cost" formControlName="cost">
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field>
+              <input type="number" matInput placeholder="Net price" formControlName="netPrice">
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field>
+              <input type="number" matInput placeholder="Tax percentage" formControlName="taxPercentage">
+            </mat-form-field>
+          </div>
+
+          <div *ngIf="canUpdateSales">
+            <button [disabled]="!(productSalesValid)" mat-raised-button color="primary" (click)="updateSales()">Update</button>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+  </form>
+
+</div>
