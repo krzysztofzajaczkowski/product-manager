@@ -14,13 +14,14 @@ import { LogoutComponent } from './logout/logout.component';
 
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatTableModule } from '@angular/material';
 import { AuthService } from './auth.service';
 import { BrowseComponent } from './browse/browse.component';
 import { AuthGuardService } from './auth-guard.service';
 import { ProductService } from './product.service';
 import { TokenInterceptorService } from './token-interceptor.service';
 import { ProductEditComponent } from './product-edit/product-edit.component';
+import { ProductAddComponent } from './product-add/product-add.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ProductEditComponent } from './product-edit/product-edit.component';
     LogoutComponent,
     BrowseComponent,
     ProductEditComponent,
+    ProductAddComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -45,7 +47,8 @@ import { ProductEditComponent } from './product-edit/product-edit.component';
       { path: 'login', component: LoginComponent },
       { path: 'logout', component: LogoutComponent },
       { path: 'browse', component: BrowseComponent, canActivate: [AuthGuardService] },
-      { path: 'product/edit/:sku', component: ProductEditComponent, canActivate: [AuthGuardService] }
+      { path: 'product/edit/:sku', component: ProductEditComponent, canActivate: [AuthGuardService] },
+      { path: 'product/add', component: ProductAddComponent, canActivate: [AuthGuardService] }
     ]),
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -54,7 +57,9 @@ import { ProductEditComponent } from './product-edit/product-edit.component';
     MatButtonModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatChipsModule
+    MatChipsModule,
+    MatIconModule,
+    MatTableModule
   ],
   providers: [
     AuthService,

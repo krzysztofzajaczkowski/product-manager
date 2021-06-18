@@ -8,6 +8,8 @@ import { ProductService } from '../product.service';
   styleUrls: ['./browse.component.css']
 })
 export class BrowseComponent implements OnInit {
+
+  displayedColumns: string[] = ['sku', 'name', 'net price', 'stock', 'actions'];
   items: ProductBlockDto[];
 
   constructor(
@@ -20,6 +22,10 @@ export class BrowseComponent implements OnInit {
       (error) => {
       }
     );
+  }
+
+  get canAddProduct() {
+    return this.productService.canUpdateCatalog;
   }
 
   ngOnInit() {
