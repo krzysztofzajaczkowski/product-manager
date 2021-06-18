@@ -14,7 +14,7 @@ import { LogoutComponent } from './logout/logout.component';
 
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatTableModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatTableModule, MatTabsModule } from '@angular/material';
 import { AuthService } from './auth.service';
 import { BrowseComponent } from './browse/browse.component';
 import { AuthGuardService } from './auth-guard.service';
@@ -59,7 +59,8 @@ import { ProductAddComponent } from './product-add/product-add.component';
     MatCheckboxModule,
     MatChipsModule,
     MatIconModule,
-    MatTableModule
+    MatTableModule,
+    MatTabsModule
   ],
   providers: [
     AuthService,
