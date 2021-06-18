@@ -30,13 +30,13 @@
         <div formGroupName="warehouse" class="flex-form">
           <div>
             <mat-form-field>
-              <input type="number" matInput placeholder="Stock" formControlName="stock">
+              <input type="number" matInput placeholder="Stock" formControlName="stock" min=0>
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field>
-              <input type="number" matInput placeholder="Weight" formControlName="weight">
+              <input type="number" matInput placeholder="Weight" formControlName="weight" min=0>
             </mat-form-field>
           </div>
 
@@ -50,19 +50,19 @@
         <div formGroupName="sales" class="flex-form">
           <div>
             <mat-form-field>
-              <input type="number" matInput placeholder="Cost" formControlName="cost">
+              <input type="number" matInput placeholder="Cost" formControlName="cost" min=1>
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field>
-              <input type="number" matInput placeholder="Net price" formControlName="netPrice">
+              <input type="number" matInput placeholder="Net price" formControlName="netPrice" min=2>
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field>
-              <input type="number" matInput placeholder="Tax percentage" formControlName="taxPercentage">
+              <input type="number" matInput placeholder="Tax percentage" formControlName="taxPercentage" min=0>
             </mat-form-field>
           </div>
 
