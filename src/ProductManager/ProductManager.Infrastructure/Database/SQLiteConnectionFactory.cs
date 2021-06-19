@@ -24,5 +24,13 @@ namespace ProductManager.Infrastructure.Database
 
             return conn;
         }
+
+        public IDbConnection Create()
+        {
+            var conn = new SQLiteConnection(_connectionString);
+            conn.Open();
+
+            return conn;
+        }
     }
 }

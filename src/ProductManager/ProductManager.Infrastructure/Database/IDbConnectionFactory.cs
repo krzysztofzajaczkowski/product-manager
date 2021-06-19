@@ -5,6 +5,7 @@ namespace ProductManager.Infrastructure.Database
 {
     public interface IDbConnectionFactory
     {
-        public Task<IDbConnection> CreateAsync();
+        Task<IDbConnection> CreateAsync();
+        IDbConnection Create();
     }
 }
