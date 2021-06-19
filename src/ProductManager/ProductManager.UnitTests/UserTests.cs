@@ -64,8 +64,6 @@ namespace ProductManager.UnitTests
         [Theory]
         [InlineData("test", "email@email.com", "")]
         [InlineData("test", "email@email.com", " ")]
-        [InlineData("test", "email@email.com", "*")]
-        [InlineData("test", "email@email.com", "/")]
         public void CreatingNewUser_WithInvalidPassword_ThrowsInvalidPasswordException(string name, string email, string password)
         {
             // Arrange

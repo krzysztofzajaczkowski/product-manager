@@ -10,6 +10,7 @@ using ProductManager.Core.Domain;
 using ProductManager.Core.Exceptions;
 using ProductManager.Core.Repositories;
 using ProductManager.Infrastructure.DTO;
+using ProductManager.Infrastructure.Helper;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Services;
 using Xunit;
@@ -271,7 +272,7 @@ namespace ProductManager.UnitTests
                 Role = roleName
             };
             var role = new Role(roleName);
-            var user = new User(Guid.NewGuid(), userName, userEmail, userPassword, role);
+            var user = new User(Guid.NewGuid(), userName, userEmail, PasswordHelper.CalculateHash(userPassword), role);
             var repository = new Mock<IUserRepository>();
             var jwtHandler = new Mock<IJwtHandler>();
             var service = new UserService(repository.Object, jwtHandler.Object);

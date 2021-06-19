@@ -14,7 +14,7 @@ namespace ProductManager.Core.Domain
         public string Email { get; protected set; }
         private readonly Regex _emailRegex = new Regex(@"^[\w.-]+@(?=[a-z\d][^.]*\.)[a-z\d.-]*[^.]$");
         public string Password { get; protected set; }
-        private readonly Regex _passwordRegex = new Regex(@"^[a-zA-Z0-9]");
+        //private readonly Regex _passwordRegex = new Regex(@"^[a-zA-Z0-9]");
         protected List<Role> _roles = new List<Role>();
         public IEnumerable<Role> Roles => _roles.AsEnumerable();
 
@@ -74,7 +74,7 @@ namespace ProductManager.Core.Domain
 
         public void SetPassword(string password)
         {
-            if (string.IsNullOrWhiteSpace(password) || !_passwordRegex.IsMatch(password))
+            if (string.IsNullOrWhiteSpace(password) /*|| !_passwordRegex.IsMatch(password)*/)
             {
                 throw new InvalidPasswordException("User password should contain only alphanumeric characters.");
             }

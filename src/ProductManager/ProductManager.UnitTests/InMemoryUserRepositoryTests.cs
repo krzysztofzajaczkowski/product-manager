@@ -48,7 +48,11 @@ namespace ProductManager.UnitTests
             var retrievedUser = await repository.GetUserAsync(createdUser.Id);
 
             // Assert
-            retrievedUser.Should().Be(createdUser);
+            retrievedUser.Should().BeEquivalentTo(createdUser, options =>
+            {
+                options.Excluding(x => x.Password);
+                return options;
+            });
         }
 
         [Fact]
@@ -63,7 +67,11 @@ namespace ProductManager.UnitTests
             var retrievedUser = await repository.GetUserAsync(createdUser.Email);
 
             // Assert
-            retrievedUser.Should().Be(createdUser);
+            retrievedUser.Should().BeEquivalentTo(createdUser, options =>
+            {
+                options.Excluding(x => x.Password);
+                return options;
+            });
         }
 
         [Fact]
