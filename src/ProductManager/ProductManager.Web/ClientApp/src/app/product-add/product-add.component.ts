@@ -28,7 +28,7 @@ export class ProductAddComponent implements OnInit {
         Validators.required
       ]],
       description: ['', [
-
+        Validators.required
       ]]
     });
   }
