@@ -27,15 +27,16 @@ namespace ProductManager.IntegrationTests
             _sut = scope.ServiceProvider.GetRequiredService<IProductService>();
         }
 
-        [Fact]
-        public async Task GettingAllProducts_WhenNoProducts_ShouldReturnEmptyList()
-        {
-            // Act
-            var retrievedProductDtos = await _sut.GetAllAsync();
+        // Removed due to database seeding on initialize
+        //[Fact]
+        //public async Task GettingAllProducts_WhenNoProducts_ShouldReturnEmptyList()
+        //{
+        //    // Act
+        //    var retrievedProductDtos = await _sut.GetAllAsync();
 
-            // Assert
-            retrievedProductDtos.Should().BeEmpty();
-        }
+        //    // Assert
+        //    retrievedProductDtos.Should().BeEmpty();
+        //}
 
         [Fact]
         public async Task GettingAllProducts_WhenProductsExist_ReturnedListShouldNotBeEmpty()
@@ -112,7 +113,7 @@ namespace ProductManager.IntegrationTests
             var retrievedProductDtos = await _sut.GetAllAsync();
 
             // Assert
-            retrievedProductDtos.First().Should().BeEquivalentTo(productDto);
+            retrievedProductDtos.First(p => p.Sku == sku).Should().BeEquivalentTo(productDto);
         }
 
         [Fact]
