@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ProductManager.Core.Repositories;
 using ProductManager.Infrastructure.Configuration;
+using ProductManager.Infrastructure.Database;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Services;
 using ProductManager.Infrastructure.Settings;
@@ -25,6 +26,9 @@ namespace ProductManager.Infrastructure.IoC
             services.AddTransient<IJwtHandler, JwtHandler>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProductService, ProductService>();
+
+            services.AddTransient<IDbConnectionFactory, SQLiteConnectionFactory>(provider =>
+                new SQLiteConnectionFactory(config.GetConnectionString("SQLite")));
 
             return services;
         }
