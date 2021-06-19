@@ -33,6 +33,8 @@ namespace ProductManager.Infrastructure.IoC
             services.AddTransient<IUserRepository, SQLiteUserRepository>();
             services.AddTransient<IProductRepository, SQLiteProductRepository>();
 
+            services.AddSingleton<DatabaseInitializier>();
+
             return services;
         }
     }
