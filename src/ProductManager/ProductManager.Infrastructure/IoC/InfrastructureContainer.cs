@@ -30,6 +30,9 @@ namespace ProductManager.Infrastructure.IoC
             services.AddTransient<IDbConnectionFactory, SQLiteConnectionFactory>(provider =>
                 new SQLiteConnectionFactory(config.GetConnectionString("SQLite")));
 
+            services.AddTransient<IUserRepository, SQLiteUserRepository>();
+            services.AddTransient<IProductRepository, SQLiteProductRepository>();
+
             return services;
         }
     }
