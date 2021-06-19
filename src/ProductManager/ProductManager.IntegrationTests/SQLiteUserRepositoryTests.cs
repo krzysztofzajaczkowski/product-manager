@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using ProductManager.Infrastructure.Database;
+using ProductManager.Infrastructure.Helper;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Services;
 using ProductManager.Infrastructure.Settings;
@@ -40,6 +41,42 @@ namespace ProductManager.IntegrationTests
 
             // Assert
             account.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task WhenUsingDatabaseInitializer_AdminAccountPasswordShouldBeHashed()
+        {
+            // Arrange
+            var adminPassword = "secret";
+            var dbConnectionFactory = new SQLiteConnectionFactory(_connectionString);
+            var dbInitializer = new DatabaseInitializier(dbConnectionFactory);
+            var sut = new SQLiteUserRepository(dbConnectionFactory);
+
+            await dbInitializer.SeedDatabaseAsync();
+
+            // Act
+            var account = await sut.GetUserAsync("admin@admin.com");
+
+            // Assert
+            account.Password.Should().NotBe(adminPassword);
+        }
+
+        [Fact]
+        public async Task WhenUsingDatabaseInitializer_AdminAccountPasswordShouldBeHashedStringSecret()
+        {
+            // Arrange
+            var adminPassword = "secret";
+            var dbConnectionFactory = new SQLiteConnectionFactory(_connectionString);
+            var dbInitializer = new DatabaseInitializier(dbConnectionFactory);
+            var sut = new SQLiteUserRepository(dbConnectionFactory);
+
+            await dbInitializer.SeedDatabaseAsync();
+
+            // Act
+            var account = await sut.GetUserAsync("admin@admin.com");
+
+            // Assert
+            PasswordHelper.CheckMatch(account.Password, adminPassword).Should().BeTrue();
         }
 
         [Fact]
