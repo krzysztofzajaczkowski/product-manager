@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using ProductManager.Core.Domain;
+using ProductManager.Infrastructure.Helper;
 using ProductManager.Infrastructure.Services;
 
 namespace ProductManager.Infrastructure.Database
@@ -89,8 +90,16 @@ namespace ProductManager.Infrastructure.Database
                 new User(Guid.NewGuid(), "admin", "admin@admin.com", "secret", roles.ToArray())
             };
 
+            var usersWithHashedPassword = users.Select(u => new
+            {
+                Id = u.Id,
+                Name = u.Name,
+                Email = u.Email,
+                Password = PasswordHelper.CalculateHash(u.Password)
+            });
+
             await conn.ExecuteAsync(
-                "INSERT INTO Users(Id, Name, Email, Password) VALUES (@Id, @Name, @Email, @Password);", users);
+                "INSERT INTO Users(Id, Name, Email, Password) VALUES (@Id, @Name, @Email, @Password);", usersWithHashedPassword);
 
             var userRoles = users.SelectMany(u =>
             {

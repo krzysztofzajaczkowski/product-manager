@@ -8,6 +8,7 @@ using ProductManager.Core.Exceptions;
 using ProductManager.Core.Repositories;
 using ProductManager.Infrastructure.DTO;
 using ProductManager.Infrastructure.Extensions;
+using ProductManager.Infrastructure.Helper;
 
 namespace ProductManager.Infrastructure.Services
 {
@@ -56,7 +57,7 @@ namespace ProductManager.Infrastructure.Services
             {
                 throw new InvalidCredentialsException("Invalid credentials.");
             }
-            if (user.Password != password)
+            if (!PasswordHelper.CheckMatch(user.Password, password))
             {
                 throw new InvalidCredentialsException("Invalid credentials.");
             }
