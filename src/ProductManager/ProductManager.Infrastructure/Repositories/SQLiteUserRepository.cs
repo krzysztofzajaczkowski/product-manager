@@ -45,7 +45,7 @@ namespace ProductManager.Infrastructure.Repositories
                     }
 
                     return combinedUser;
-                }).First();
+                }).FirstOrDefault();
 
             return user;
         }
@@ -77,7 +77,7 @@ namespace ProductManager.Infrastructure.Repositories
                     }
 
                     return combinedUser;
-                }).First();
+                }).FirstOrDefault();
 
 
             return user;
