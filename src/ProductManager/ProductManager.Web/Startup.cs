@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
@@ -72,7 +73,10 @@ namespace ProductManager.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            ElectronBootstrap();
+            if (Environment.GetEnvironmentVariable("RUN_ELECTRON") == "1" || Environment.GetEnvironmentVariable("RUN_ELECTRON") == null)
+            {
+                ElectronBootstrap();
+            }
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
