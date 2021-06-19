@@ -24,6 +24,10 @@ namespace ProductManager.IntegrationTests
         {
             _dbFileName = "database.db";
             _connectionString = $"DataSource={_dbFileName};BinaryGUID=False;";
+            if (File.Exists(_dbFileName))
+            {
+                File.Delete(_dbFileName);
+            }
         }
 
         [Fact]
