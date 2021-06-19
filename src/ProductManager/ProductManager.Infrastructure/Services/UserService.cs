@@ -46,7 +46,7 @@ namespace ProductManager.Infrastructure.Services
             {
                 throw new EmailAlreadyUsedException($"User with email: '{email}' already exists.");
             }
-            user = new User(userId, name, email, password, role);
+            user = new User(userId, name, email, PasswordHelper.CalculateHash(password), role);
             await _userRepository.AddAsync(user);
         }
 
