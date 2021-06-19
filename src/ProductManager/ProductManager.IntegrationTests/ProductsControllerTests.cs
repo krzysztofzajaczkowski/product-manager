@@ -878,6 +878,7 @@ namespace ProductManager.IntegrationTests
         {
             _client.Dispose();
             _server.Dispose();
+            base.Dispose();
         }
     }
 }

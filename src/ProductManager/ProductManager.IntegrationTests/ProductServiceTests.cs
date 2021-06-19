@@ -519,6 +519,7 @@ namespace ProductManager.IntegrationTests
         public void Dispose()
         {
             _server.Dispose();
+            base.Dispose();
         }
     }
 }

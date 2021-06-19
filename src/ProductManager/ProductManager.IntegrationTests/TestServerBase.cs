@@ -12,17 +12,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using ProductManager.Core.Repositories;
+using ProductManager.Infrastructure.Database;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Settings;
 using ProductManager.Web;
 
 namespace ProductManager.IntegrationTests
 {
-    public class TestServerBase
+    public class TestServerBase : IDisposable
     {
         protected JwtSettings _jwtSettings;
+        private string _dbFileName;
 
-        protected TestServer BuildTestServer()
+        protected TestServer BuildTestServer(bool inMemoryRepositories = false)
         {
             var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var solutionPath = Directory.GetParent(testAssemblyPath.Substring(0, testAssemblyPath.LastIndexOf($@"\bin\", StringComparison.Ordinal))).FullName;
@@ -36,11 +38,27 @@ namespace ProductManager.IntegrationTests
                 .UseStartup<Startup>()
                 .ConfigureTestServices(services =>
                 {
-                    services.RemoveAll(typeof(IUserRepository));
-                    services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+                    if (inMemoryRepositories)
+                    {
+                        services.RemoveAll(typeof(IUserRepository));
+                        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
 
-                    services.RemoveAll(typeof(IProductRepository));
-                    services.AddSingleton<IProductRepository, InMemoryProductRepository>();
+                        services.RemoveAll(typeof(IProductRepository));
+                        services.AddSingleton<IProductRepository, InMemoryProductRepository>();
+                    }
+                    else
+                    {
+                        _dbFileName = $"database{Guid.NewGuid()}.db";
+                        services.RemoveAll(typeof(IDbConnectionFactory));
+                        services.AddTransient<IDbConnectionFactory, SQLiteConnectionFactory>(serviceProvider =>
+                            new SQLiteConnectionFactory($"DataSource={_dbFileName};BinaryGUID=False;"));
+                        //var provider = services.BuildServiceProvider();
+                        //var dbFileName = provider.GetRequiredService<IConfiguration>().GetConnectionString("SQLite").Split(";").First().Split("=").Last();
+                        //if (File.Exists(_dbFileName))
+                        //{
+                        //    File.Delete(_dbFileName);
+                        //}
+                    }
                 });
 
             var server = new TestServer(webHostBuilder);
@@ -48,6 +66,14 @@ namespace ProductManager.IntegrationTests
             _jwtSettings = server.Services.GetService<IOptions<JwtSettings>>().Value;
 
             return server;
+        }
+
+        public void Dispose()
+        {
+            if (!string.IsNullOrWhiteSpace(_dbFileName) && File.Exists(_dbFileName))
+            {
+                File.Delete(_dbFileName);
+            }
         }
     }
 }
