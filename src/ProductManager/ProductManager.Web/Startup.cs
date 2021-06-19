@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using ProductManager.Infrastructure.Database;
 using ProductManager.Infrastructure.IoC;
 using ProductManager.Infrastructure.Repositories;
 using ProductManager.Infrastructure.Services;
@@ -73,6 +74,8 @@ namespace ProductManager.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.ApplicationServices.GetRequiredService<DatabaseInitializier>().SeedDatabaseAsync();
+
             if (Environment.GetEnvironmentVariable("RUN_ELECTRON") == "1")
             {
                 ElectronBootstrap();
