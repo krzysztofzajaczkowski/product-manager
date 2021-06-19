@@ -25,7 +25,7 @@ namespace ProductManager.IntegrationTests
         {
             _testServer = BuildTestServer();
             _connectionString = _testServer.Services.GetRequiredService<IConfiguration>().GetConnectionString("SQLite");
-            _dbFileName = _connectionString.Split("=").Last();
+            _dbFileName = _connectionString.Split(";").First().Split("=").Last();
         }
 
         [Fact]
