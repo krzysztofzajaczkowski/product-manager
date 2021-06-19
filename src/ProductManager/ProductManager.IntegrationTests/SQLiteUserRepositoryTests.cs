@@ -22,7 +22,7 @@ namespace ProductManager.IntegrationTests
 
         public SQLiteUserRepositoryTests()
         {
-            _dbFileName = "database.db";
+            _dbFileName = $"database{Guid.NewGuid()}.db";
             _connectionString = $"DataSource={_dbFileName};BinaryGUID=False;";
             if (File.Exists(_dbFileName))
             {
