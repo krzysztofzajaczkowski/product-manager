@@ -26,6 +26,8 @@ namespace ProductManager.IntegrationTests
 
         protected TestServer BuildTestServer(bool inMemoryRepositories = false)
         {
+            Environment.SetEnvironmentVariable("RUN_ELECTRON", "0");
+
             var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var solutionPath = Directory.GetParent(testAssemblyPath.Substring(0, testAssemblyPath.LastIndexOf($@"\bin\", StringComparison.Ordinal))).FullName;
             var appsettingsPath = Path.Join(solutionPath, "ProductManager.Web");
