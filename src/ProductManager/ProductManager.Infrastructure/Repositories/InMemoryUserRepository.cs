@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ProductManager.Core.Domain;
 using ProductManager.Core.Repositories;
+using ProductManager.Infrastructure.Helper;
 
 namespace ProductManager.Infrastructure.Repositories
 {
@@ -22,9 +23,9 @@ namespace ProductManager.Infrastructure.Repositories
             _roles.Add(new Role(Guid.NewGuid(), "SalesManager"));
             _roles.Add(new Role(Guid.NewGuid(), "WarehouseManager"));
 
-            _users.Add(new User(Guid.NewGuid(), "User", "user@user.com", "secret",
+            _users.Add(new User(Guid.NewGuid(), "User", "user@user.com", PasswordHelper.CalculateHash("secret"),
                 _roles.SingleOrDefault(r => r.Name == "user")));
-            _users.Add(new User(Guid.NewGuid(), "Admin", "admin@admin.com", "secret", _roles.ToArray()));
+            _users.Add(new User(Guid.NewGuid(), "Admin", "admin@admin.com", PasswordHelper.CalculateHash("secret"), _roles.ToArray()));
 
         }
 
@@ -50,7 +51,8 @@ namespace ProductManager.Infrastructure.Repositories
 
         public async Task AddAsync(User user)
         {
-            _users.Add(user);
+            var hashedPasswordUser = new User(user.Id, user.Name, user.Email, PasswordHelper.CalculateHash(user.Password), user.Roles.ToArray());
+            _users.Add(hashedPasswordUser);
             await Task.CompletedTask;
         }
     }
