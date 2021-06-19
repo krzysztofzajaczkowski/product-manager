@@ -12,11 +12,16 @@ namespace ProductManager.Infrastructure.Helper
     {
         public static string CalculateHash(string input)
         {
-            var salt = GenerateSalt(16);
+            if (!string.IsNullOrWhiteSpace(input))
+            {
+                var salt = GenerateSalt(16);
 
-            var bytes = KeyDerivation.Pbkdf2(input, salt, KeyDerivationPrf.HMACSHA512, 10000, 16);
+                var bytes = KeyDerivation.Pbkdf2(input, salt, KeyDerivationPrf.HMACSHA512, 10000, 16);
 
-            return $"{ Convert.ToBase64String(salt) }:{ Convert.ToBase64String(bytes) }";
+                return $"{ Convert.ToBase64String(salt) }:{ Convert.ToBase64String(bytes) }";
+            }
+
+            return "";
         }
 
         private static byte[] GenerateSalt(int length)
