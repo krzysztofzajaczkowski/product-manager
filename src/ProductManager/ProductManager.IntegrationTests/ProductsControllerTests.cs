@@ -81,19 +81,20 @@ namespace ProductManager.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
-        public async Task CallingBrowse_WhenAuthenticatedAndNoProducts_ShouldReturnEmptyListOfProductBlockDto()
-        {
-            // Arrange
-            await RegisterAsync("NewUser", "newuser@email.com", "password");
-            await LoginAsync("newuser@email.com", "password");
+        // Removed due to seeding database on initialize
+        //[Fact]
+        //public async Task CallingBrowse_WhenAuthenticatedAndNoProducts_ShouldReturnEmptyListOfProductBlockDto()
+        //{
+        //    // Arrange
+        //    await RegisterAsync("NewUser", "newuser@email.com", "password");
+        //    await LoginAsync("newuser@email.com", "password");
 
-            // Act
-            var products = await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/Browse");
+        //    // Act
+        //    var products = await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/Browse");
 
-            // Assert
-            products.Should().BeEmpty();
-        }
+        //    // Assert
+        //    products.Should().BeEmpty();
+        //}
 
         [Fact]
         public async Task CallingBrowse_WhenAuthenticatedAndWithProducts_ShouldReturnNonEmptyListOfProductBlockDto()
