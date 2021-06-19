@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ProductManager.IntegrationTests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "RUN_ELECTRON": "0"
+      }
+    }
+  }
+}
