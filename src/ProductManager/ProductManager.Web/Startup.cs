@@ -76,7 +76,7 @@ namespace ProductManager.Web
         {
             app.ApplicationServices.GetRequiredService<DatabaseInitializier>().SeedDatabaseAsync();
 
-            if (Environment.GetEnvironmentVariable("RUN_ELECTRON") == "1")
+            if (Environment.GetEnvironmentVariable("RUN_ELECTRON") == "1" || Environment.GetEnvironmentVariable("RUN_ELECTRON") == null)
             {
                 ElectronBootstrap();
             }
