@@ -113,6 +113,31 @@ namespace ProductManager.Infrastructure.Database
             await conn.ExecuteAsync(
                 "INSERT INTO UserRoles(UserId, RoleId) VALUES (@UserId, @RoleId);", userRoles);
 
+            var rand = new Random(1111);
+            var products = new List<Product>();
+            for (var i = 0; i < 30; ++i)
+            {
+                var cost = rand.Next(100, 10000) / 100.0;
+                var tax = rand.Next(8, 30);
+                var netPrice = cost * ((100 + tax) / 100.0);
+                var stock = rand.Next(0, 100);
+                var weight = rand.Next(100, 10000) / 100.0;
+                var sku = rand.Next(111111111, 999999999).ToString();
+                products.Add(new Product(Guid.NewGuid(), $"{sku}{i}", $"Prod{i}", $"Desc{i}", Guid.NewGuid(), stock, weight, Guid.NewGuid(),
+                    (decimal)cost, tax, (decimal)netPrice));
+            }
+
+            await conn.ExecuteAsync(
+                "INSERT INTO CatalogProducts(Id, Sku, Name, Description) VALUES (@Id, @Sku, @Name, @Description);",
+                products.Select(p => p.CatalogProduct).ToList());
+
+            await conn.ExecuteAsync(
+                "INSERT INTO WarehouseProducts(Id, Sku, Stock, Weight) VALUES (@Id, @Sku, @Stock, @Weight);",
+                products.Select(p => p.WarehouseProduct).ToList());
+
+            await conn.ExecuteAsync(
+                "INSERT INTO SalesProducts(Id, Sku, Cost, TaxPercentage, NetPrice) VALUES (@Id, @Sku, @Cost, @TaxPercentage, @NetPrice);",
+                products.Select(p => p.SalesProduct).ToList());
         }
     }
 }
