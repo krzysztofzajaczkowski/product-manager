@@ -10,9 +10,19 @@ namespace ProductManager.Infrastructure.Database
 {
     public class SQLiteConnectionFactory : IDbConnectionFactory
     {
+        private readonly string _connectionString;
+
+        public SQLiteConnectionFactory(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         public async Task<IDbConnection> CreateAsync()
         {
-            throw new NotImplementedException();
+            var conn = new SQLiteConnection(_connectionString);
+            await conn.OpenAsync();
+
+            return conn;
         }
     }
 }
