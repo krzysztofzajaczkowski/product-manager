@@ -21,15 +21,17 @@ namespace ProductManager.Infrastructure.Database
             _dbConnectionFactory = dbConnectionFactory;
         }
 
-        public async Task SeedDatabaseAsync()
+        public Task SeedDatabaseAsync()
         {
-            SqlMapper.AddTypeHandler(new GuidTypeHandler());
-            SqlMapper.RemoveTypeMap(typeof(Guid));
-            SqlMapper.RemoveTypeMap(typeof(Guid?));
-            using var conn = await _dbConnectionFactory.CreateAsync();
+            try
+            {
+                SqlMapper.AddTypeHandler(new GuidTypeHandler());
+                SqlMapper.RemoveTypeMap(typeof(Guid));
+                SqlMapper.RemoveTypeMap(typeof(Guid?));
+                using var conn = _dbConnectionFactory.Create();
 
-            // create tables
-            await conn.ExecuteAsync(@"CREATE TABLE Users (
+                // create tables
+                conn.Execute(@"CREATE TABLE Users (
 	                                        Id TEXT primary key,
 	                                        Name nvarchar(30) unique not null,
 	                                        Email nvarchar(60) unique not null,
@@ -49,7 +51,7 @@ namespace ProductManager.Infrastructure.Database
 	                                        CONSTRAINT fk_UserRoles_Roles FOREIGN KEY (RoleId) REFERENCES Roles (Id)
                                         );");
 
-            await conn.ExecuteAsync(@"CREATE TABLE CatalogProducts (
+                conn.Execute(@"CREATE TABLE CatalogProducts (
 	                                        Id TEXT,
 	                                        Sku nvarchar(255) unique not null,
 	                                        Name nvarchar(255) unique not null,
@@ -75,69 +77,78 @@ namespace ProductManager.Infrastructure.Database
                                         );
                                         ");
 
-            // seed database
+                // seed database
 
-            var roles = new List<Role>
-            {
-                new Role("CatalogManager"),
-                new Role("SalesManager"),
-                new Role("WarehouseManager")
-            };
-            await conn.ExecuteAsync("INSERT INTO Roles(Id,Name) VALUES (@Id, @Name);", roles);
-
-            var users = new List<User>
-            {
-                new User(Guid.NewGuid(), "admin", "admin@admin.com", "secret", roles.ToArray())
-            };
-
-            var usersWithHashedPassword = users.Select(u => new
-            {
-                Id = u.Id,
-                Name = u.Name,
-                Email = u.Email,
-                Password = PasswordHelper.CalculateHash(u.Password)
-            });
-
-            await conn.ExecuteAsync(
-                "INSERT INTO Users(Id, Name, Email, Password) VALUES (@Id, @Name, @Email, @Password);", usersWithHashedPassword);
-
-            var userRoles = users.SelectMany(u =>
-            {
-                return u.Roles.Select(r => new
+                var roles = new List<Role>
                 {
-                    UserId = u.Id,
-                    RoleId = r.Id
+                    new Role("CatalogManager"),
+                    new Role("SalesManager"),
+                    new Role("WarehouseManager"),
+                    new Role("user"),
+                    new Role("admin")
+                };
+                conn.Execute("INSERT INTO Roles(Id,Name) VALUES (@Id, @Name);", roles);
+
+                var users = new List<User>
+                {
+                    new User(Guid.NewGuid(), "admin", "admin@admin.com", "secret", roles.ToArray())
+                };
+
+                var usersWithHashedPassword = users.Select(u => new
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    Email = u.Email,
+                    Password = PasswordHelper.CalculateHash(u.Password)
                 });
-            }).ToList();
 
-            await conn.ExecuteAsync(
-                "INSERT INTO UserRoles(UserId, RoleId) VALUES (@UserId, @RoleId);", userRoles);
+                conn.Execute(
+                    "INSERT INTO Users(Id, Name, Email, Password) VALUES (@Id, @Name, @Email, @Password);", usersWithHashedPassword);
 
-            var rand = new Random(1111);
-            var products = new List<Product>();
-            for (var i = 0; i < 30; ++i)
+                var userRoles = users.SelectMany(u =>
+                {
+                    return u.Roles.Select(r => new
+                    {
+                        UserId = u.Id,
+                        RoleId = r.Id
+                    });
+                }).ToList();
+
+                conn.Execute(
+                    "INSERT INTO UserRoles(UserId, RoleId) VALUES (@UserId, @RoleId);", userRoles);
+
+                var rand = new Random(1111);
+                var products = new List<Product>();
+                for (var i = 0; i < 30; ++i)
+                {
+                    var cost = rand.Next(100, 10000) / 100.0;
+                    var tax = rand.Next(8, 30);
+                    var netPrice = cost * ((100 + tax) / 100.0);
+                    var stock = rand.Next(0, 100);
+                    var weight = rand.Next(100, 10000) / 100.0;
+                    var sku = rand.Next(111111111, 999999999).ToString();
+                    products.Add(new Product(Guid.NewGuid(), $"{sku}{i}", $"Prod{i}", $"Desc{i}", Guid.NewGuid(), stock, weight, Guid.NewGuid(),
+                        (decimal)cost, tax, (decimal)netPrice));
+                }
+
+                conn.Execute(
+                    "INSERT INTO CatalogProducts(Id, Sku, Name, Description) VALUES (@Id, @Sku, @Name, @Description);",
+                    products.Select(p => p.CatalogProduct).ToList());
+
+                conn.Execute(
+                    "INSERT INTO WarehouseProducts(Id, Sku, Stock, Weight) VALUES (@Id, @Sku, @Stock, @Weight);",
+                    products.Select(p => p.WarehouseProduct).ToList());
+
+                conn.Execute(
+                    "INSERT INTO SalesProducts(Id, Sku, Cost, TaxPercentage, NetPrice) VALUES (@Id, @Sku, @Cost, @TaxPercentage, @NetPrice);",
+                    products.Select(p => p.SalesProduct).ToList());
+            }
+            catch (Exception e)
             {
-                var cost = rand.Next(100, 10000) / 100.0;
-                var tax = rand.Next(8, 30);
-                var netPrice = cost * ((100 + tax) / 100.0);
-                var stock = rand.Next(0, 100);
-                var weight = rand.Next(100, 10000) / 100.0;
-                var sku = rand.Next(111111111, 999999999).ToString();
-                products.Add(new Product(Guid.NewGuid(), $"{sku}{i}", $"Prod{i}", $"Desc{i}", Guid.NewGuid(), stock, weight, Guid.NewGuid(),
-                    (decimal)cost, tax, (decimal)netPrice));
+                // Database already initialized
             }
 
-            await conn.ExecuteAsync(
-                "INSERT INTO CatalogProducts(Id, Sku, Name, Description) VALUES (@Id, @Sku, @Name, @Description);",
-                products.Select(p => p.CatalogProduct).ToList());
-
-            await conn.ExecuteAsync(
-                "INSERT INTO WarehouseProducts(Id, Sku, Stock, Weight) VALUES (@Id, @Sku, @Stock, @Weight);",
-                products.Select(p => p.WarehouseProduct).ToList());
-
-            await conn.ExecuteAsync(
-                "INSERT INTO SalesProducts(Id, Sku, Cost, TaxPercentage, NetPrice) VALUES (@Id, @Sku, @Cost, @TaxPercentage, @NetPrice);",
-                products.Select(p => p.SalesProduct).ToList());
+            return Task.CompletedTask;
         }
     }
 }
