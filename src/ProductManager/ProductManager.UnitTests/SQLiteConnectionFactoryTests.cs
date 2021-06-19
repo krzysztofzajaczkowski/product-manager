@@ -26,40 +26,46 @@ namespace ProductManager.UnitTests
         [Fact]
         public void WhenCreatingSQLiteConnectionFactory_ConnectionStringFieldShouldBeEqualToPassedParameter()
         {
+            // Arrange
             var testConnectionString = "testConnString";
             var sut = new SQLiteConnectionFactory(testConnectionString);
 
             var connectionStringField = sut.GetType()
                 .GetFields(BindingFlags.NonPublic | BindingFlags.Instance).First(x => x.Name == "_connectionString" && x.IsPrivate);
 
+            // Act
             var value = (string) connectionStringField.GetValue(sut);
 
+            // Assert
             value.Should().Be(testConnectionString);
         }
 
         [Fact]
         public async Task WhenCallingCreate_FactoryShouldReturnOpenedIDbConnection()
         {
+            // Arrange
             var sut = new SQLiteConnectionFactory(_connectionString);
-
+            
+            // Act
             var conn = await sut.CreateAsync();
-
             var caughtState = conn.State;
-
             conn.Close();
 
+            // Assert
             caughtState.Should().Be(ConnectionState.Open);
         }
 
         [Fact]
         public async Task WhenCallingCreate_FactoryShouldCreateFileWithSpecifiedPath()
         {
+            // Arrange
             var sut = new SQLiteConnectionFactory(_connectionString);
 
+            // Act
             var conn = await sut.CreateAsync();
-
             conn.Close();
 
+            // Assert
             File.Exists(_dbFileName).Should().BeTrue();
         }
 
