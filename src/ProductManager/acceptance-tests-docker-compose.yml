@@ -1,0 +1,10 @@
+version: '3.5'
+services:
+
+  app:
+    build: ./
+    environment:
+      - RUN_ELECTRON=0
+    ports:
+      - 8005:8001
+      - 8006:80
