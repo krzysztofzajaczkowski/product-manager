@@ -1,0 +1,218 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using ProductManager.Infrastructure.DTO;
+using ProductManager.Infrastructure.Services;
+using ProductManager.Web.Requests;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace ProductManager.AcceptanceTests
+{
+    public class ProductTests : DockerTestsBase
+    {
+        private readonly Task _clientsBootstrapTask;
+        private HttpClient _client;
+
+        public ProductTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+            _clientsBootstrapTask = Task.Run(async () =>
+            {
+                _client = await SetupConnection("localhost:8006");
+                return Task.CompletedTask;
+            });
+        }
+
+        public async Task LoginAsync(string email, string password, string role = "user")
+        {
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
+            {
+                Email = email,
+                Password = password,
+                Role = role
+            });
+
+            response.EnsureSuccessStatusCode();
+            var tokenDto = await response.Content.ReadFromJsonAsync<TokenDto>();
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenDto.Token}");
+        }
+
+        [Fact]
+        public async Task CallingBrowse_WhenNotAuthenticated_ShouldReturnUnauthorized()
+        {
+            await _clientsBootstrapTask;
+            // Arrange/Act
+            var response = await _client.GetAsync("Products/Browse");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task CallingBrowse_WhenAuthenticated_ShouldReturnOk()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            await LoginAsync("admin@admin.com", "secret");
+
+            // Act
+            var response = await _client.GetAsync("Products/Browse");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task CallingBrowse_WhenAuthenticatedAndWithProducts_ShouldReturnNonEmptyListOfProductBlockDto()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            await LoginAsync("admin@admin.com", "secret");
+
+            // Act
+            var products = await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/Browse");
+
+            // Assert
+            products.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenNotAuthenticated_ShouldReturnUnauthorized()
+        {
+            await _clientsBootstrapTask;
+            // Arrange/Act
+            var sku = "123";
+            var response = await _client.GetAsync($"Products/Browse/{sku}");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndProductExists_ShouldReturnOk()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            await LoginAsync("admin@admin.com", "secret");
+            var someProductSku = (await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/browse")).First().Sku;
+
+            // Act
+            var response = await _client.GetAsync($"Products/Browse/{someProductSku}");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndProductDoesNotExist_ShouldReturnNotFound()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            var sku = "123";
+            await LoginAsync("admin@admin.com", "secret");
+
+            // Act
+            var response = await _client.GetAsync($"Products/Browse/{sku}");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task CallingGet_WhenAuthenticatedAndProductExists_ShouldReturnProductDto()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            await LoginAsync("admin@admin.com", "secret");
+            var someProductSku = (await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/browse")).First().Sku;
+
+            // Act
+            var product = await _client.GetFromJsonAsync<ProductDto>($"Products/Browse/{someProductSku}");
+
+            // Assert
+            product.Should().BeOfType<ProductDto>();
+        }
+
+        [Fact]
+        public async Task CallingCreate_WhenNotAuthenticated_ShouldReturnUnauthorized()
+        {
+            await _clientsBootstrapTask;
+            // Arrange/Act
+            var response = await _client.PostAsJsonAsync("Products/Create", new CreateProductDto());
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task CallingCreate_WhenAuthenticatedAndNotAuthorizedAsCatalogManager_ShouldReturnForbidden()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            await LoginAsync("admin@admin.com", "secret");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Create", new CreateProductDto());
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task CallingCreate_WhenAuthenticatedAndAuthorizedAsCatalogManager_ShouldReturnCreated()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+
+            await LoginAsync("admin@admin.com", "secret", "CatalogManager");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Create", new CreateProductDto
+            {
+                Sku = sku,
+                Name = productName,
+                Description = description
+            });
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        [Fact]
+        public async Task CallingCreate_WhenAuthenticatedAndAuthorizedAsCatalogManager_ShouldCreateNewProduct()
+        {
+            await _clientsBootstrapTask;
+            // Arrange
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+
+            await LoginAsync("admin@admin.com", "secret", "CatalogManager");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Create", new CreateProductDto
+            {
+                Sku = sku,
+                Name = productName,
+                Description = description
+            });
+
+            response.EnsureSuccessStatusCode();
+
+            var retrievedProduct = await _client.GetFromJsonAsync<ProductDto>($"Products/browse/{sku}");
+
+            // Assert
+            retrievedProduct.Should().NotBeNull();
+        }
+
+    }
+}
