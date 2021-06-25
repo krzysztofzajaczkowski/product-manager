@@ -55,15 +55,34 @@ namespace ProductManager.Infrastructure.Repositories
 
             await connection.ExecuteAsync(
                 "INSERT INTO CatalogProducts(Id, Sku, Name, Description) VALUES (@Id, @Sku, @Name, @Description);",
-                product.CatalogProduct);
+                new
+                {
+                    product.CatalogProduct.Id,
+                    product.CatalogProduct.Sku.Sku,
+                    product.CatalogProduct.Name.Name,
+                    product.CatalogProduct.Description.Description
+                });
 
             await connection.ExecuteAsync(
                 "INSERT INTO WarehouseProducts(Id, Sku, Stock, Weight) VALUES (@Id, @Sku, @Stock, @Weight);",
-                product.WarehouseProduct);
+                new
+                {
+                    product.WarehouseProduct.Id,
+                    product.WarehouseProduct.Sku.Sku,
+                    product.WarehouseProduct.Stock.Stock,
+                    product.WarehouseProduct.Weight.Weight
+                });
 
             await connection.ExecuteAsync(
                 "INSERT INTO SalesProducts(Id, Sku, Cost, TaxPercentage, NetPrice) VALUES (@Id, @Sku, @Cost, @TaxPercentage, @NetPrice);",
-                product.SalesProduct);
+                new
+                {
+                    product.SalesProduct.Id,
+                    product.SalesProduct.Sku.Sku,
+                    product.SalesProduct.Price.Cost,
+                    product.SalesProduct.Price.TaxPercentage,
+                    product.SalesProduct.Price.NetPrice,
+                });
         }
 
         public async Task UpdateAsync(Product updatedProduct)
@@ -76,7 +95,13 @@ namespace ProductManager.Infrastructure.Repositories
                     Name = @Name,
                     Description = @Description
                 WHERE
-                    Sku = @Sku", updatedProduct.CatalogProduct);
+                    Sku = @Sku",
+                new
+                {
+                    updatedProduct.CatalogProduct.Sku.Sku,
+                    updatedProduct.CatalogProduct.Name.Name,
+                    updatedProduct.CatalogProduct.Description.Description
+                });
 
             await connection.ExecuteAsync(@"
                 UPDATE WarehouseProducts
@@ -84,7 +109,13 @@ namespace ProductManager.Infrastructure.Repositories
                     Stock = @Stock,
                     Weight = @Weight
                 WHERE
-                    Sku = @Sku", updatedProduct.WarehouseProduct);
+                    Sku = @Sku",
+                new
+                {
+                    updatedProduct.WarehouseProduct.Sku.Sku,
+                    updatedProduct.WarehouseProduct.Stock.Stock,
+                    updatedProduct.WarehouseProduct.Weight.Weight
+                });
 
             await connection.ExecuteAsync(@"
                 UPDATE SalesProducts
@@ -93,7 +124,14 @@ namespace ProductManager.Infrastructure.Repositories
                     TaxPercentage = @TaxPercentage,
                     NetPrice = @NetPrice
                 WHERE
-                    Sku = @Sku", updatedProduct.SalesProduct);
+                    Sku = @Sku",
+                new
+                {
+                    updatedProduct.SalesProduct.Sku.Sku,
+                    updatedProduct.SalesProduct.Price.Cost,
+                    updatedProduct.SalesProduct.Price.TaxPercentage,
+                    updatedProduct.SalesProduct.Price.NetPrice,
+                });
 
         }
 

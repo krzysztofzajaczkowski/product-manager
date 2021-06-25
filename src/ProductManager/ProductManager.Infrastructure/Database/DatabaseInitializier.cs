@@ -133,15 +133,34 @@ namespace ProductManager.Infrastructure.Database
 
                 conn.Execute(
                     "INSERT INTO CatalogProducts(Id, Sku, Name, Description) VALUES (@Id, @Sku, @Name, @Description);",
-                    products.Select(p => p.CatalogProduct).ToList());
+                    products.Select(p => new
+                    {
+                        p.CatalogProduct.Id,
+                        p.CatalogProduct.Sku.Sku,
+                        p.CatalogProduct.Name.Name,
+                        p.CatalogProduct.Description.Description
+                    }).ToList());
 
                 conn.Execute(
                     "INSERT INTO WarehouseProducts(Id, Sku, Stock, Weight) VALUES (@Id, @Sku, @Stock, @Weight);",
-                    products.Select(p => p.WarehouseProduct).ToList());
+                    products.Select(p => new
+                    {
+                        p.WarehouseProduct.Id,
+                        p.WarehouseProduct.Sku.Sku,
+                        p.WarehouseProduct.Stock.Stock,
+                        p.WarehouseProduct.Weight.Weight
+                    }).ToList());
 
                 conn.Execute(
                     "INSERT INTO SalesProducts(Id, Sku, Cost, TaxPercentage, NetPrice) VALUES (@Id, @Sku, @Cost, @TaxPercentage, @NetPrice);",
-                    products.Select(p => p.SalesProduct).ToList());
+                    products.Select(p => new
+                    {
+                        p.SalesProduct.Id,
+                        p.SalesProduct.Sku.Sku,
+                        p.SalesProduct.Price.Cost,
+                        p.SalesProduct.Price.TaxPercentage,
+                        p.SalesProduct.Price.NetPrice,
+                    }).ToList());
             }
             catch (Exception e)
             {
