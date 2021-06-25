@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProductManager.Core.Domain.ValueObjects;
 
 namespace ProductManager.Core.Domain
 {
@@ -26,9 +27,10 @@ namespace ProductManager.Core.Domain
         public Product(Guid catalogId, string sku, string name, string description, Guid warehouseId, int stock, double weight,
             Guid salesdId, decimal cost, int taxPercentage, decimal netPrice)
         {
-            WarehouseProduct = new WarehouseProduct(warehouseId, sku, stock, weight);
-            SalesProduct = new SalesProduct(salesdId, sku, cost, taxPercentage, netPrice);
-            CatalogProduct = new CatalogProduct(catalogId, sku, name, description);
+            var stockKeepingUnit = new StockKeepingUnit(sku);
+            WarehouseProduct = new WarehouseProduct(warehouseId, stockKeepingUnit, new ProductStock(stock), new ProductWeight(weight));
+            SalesProduct = new SalesProduct(salesdId, stockKeepingUnit, new Price(cost, netPrice, taxPercentage));
+            CatalogProduct = new CatalogProduct(catalogId, stockKeepingUnit, new ProductName(name), new ProductDescription(description));
         }
         
     }
