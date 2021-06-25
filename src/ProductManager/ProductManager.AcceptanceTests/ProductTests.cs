@@ -214,5 +214,97 @@ namespace ProductManager.AcceptanceTests
             retrievedProduct.Should().NotBeNull();
         }
 
+        [Fact]
+        public async Task CallingUpdateCatalog_WhenNotAuthenticated_ShouldReturnUnauthorized()
+        {
+            // Arrange/Act
+            var response = await _client.PostAsJsonAsync("Products/Update/Catalog", new UpdateCatalogProductDto());
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task CallingUpdateCatalog_WhenAuthenticatedAndNotAuthorizedAsCatalogManager_ShouldReturnForbidden()
+        {
+            // Arrange
+            await LoginAsync("admin@admin.com", "secret");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Update/Catalog", new UpdateCatalogProductDto());
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task CallingUpdateCatalog_WhenAuthenticatedAndAuthorizedAsCatalogManagerAndProductDoesNotExist_ShouldReturnNotFound()
+        {
+            // Arrange
+            var sku = "123";
+            var productName = "product name";
+            var description = "desc";
+
+            await LoginAsync("admin@admin.com", "secret", "CatalogManager");
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Update/Catalog", new UpdateCatalogProductDto
+            {
+                Sku = sku,
+                Name = productName,
+                Description = description
+            });
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task CallingUpdateCatalog_WhenAuthenticatedAndAuthorizedAsCatalogManagerAndProductExists_ShouldReturnOk()
+        {
+            // Arrange
+            var newProductName = "product name 2";
+            var newDescription = "desc 2";
+
+            await LoginAsync("admin@admin.com", "secret", "CatalogManager");
+            var someProductSku = (await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/browse")).First().Sku;
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Update/Catalog", new UpdateCatalogProductDto
+            {
+                Sku = someProductSku,
+                Name = newProductName,
+                Description = newDescription
+            });
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task CallingUpdateCatalog_WhenAuthenticatedAndAuthorizedAsCatalogManagerAndProductExists_ShouldUpdateProduct()
+        {
+            // Arrange
+            var newProductName = "product name 2";
+            var newDescription = "desc 2";
+
+            await LoginAsync("admin@admin.com", "secret", "CatalogManager");
+            var someProductSku = (await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/browse")).First().Sku;
+
+            // Act
+            var response = await _client.PostAsJsonAsync("Products/Update/Catalog", new UpdateCatalogProductDto
+            {
+                Sku = someProductSku,
+                Name = newProductName,
+                Description = newDescription
+            });
+
+            var retrievedProduct = await _client.GetFromJsonAsync<ProductDto>($"Products/browse/{someProductSku}");
+
+            // Assert
+            retrievedProduct.Should().NotBeNull();
+            retrievedProduct.Name.Should().Be(newProductName);
+            retrievedProduct.Description.Should().Be(newDescription);
+        }
     }
 }
