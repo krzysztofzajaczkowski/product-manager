@@ -7,8 +7,6 @@ before_install: cd src/ProductManager
 install:
   - dotnet restore
   
-before_script: cd src/ProductManager
-  
 script:
   - dotnet build
   - dotnet test
