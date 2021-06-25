@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ProductManager.Core.Domain;
+using ProductManager.Core.Domain.ValueObjects;
 using ProductManager.Core.Exceptions;
 using Xunit;
 
@@ -20,8 +21,8 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var catalogProduct = new CatalogProduct(Guid.NewGuid(), sku, name, description);
-                catalogProduct = new CatalogProduct(sku, name, description);
+                var catalogProduct = new CatalogProduct(Guid.NewGuid(), new StockKeepingUnit(sku), new ProductName(name), new ProductDescription(description));
+                catalogProduct = new CatalogProduct(new StockKeepingUnit(sku), new ProductName(name), new ProductDescription(description));
             };
 
             // Assert
@@ -38,7 +39,7 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var catalogProduct = new CatalogProduct(sku, name, description);
+                var catalogProduct = new CatalogProduct(new StockKeepingUnit(sku), new ProductName(name), new ProductDescription(description));
             };
 
             // Assert
@@ -55,7 +56,7 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var catalogProduct = new CatalogProduct(sku, name, description);
+                var catalogProduct = new CatalogProduct(new StockKeepingUnit(sku), new ProductName(name), new ProductDescription(description));
             };
 
             // Assert
@@ -72,53 +73,11 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var catalogProduct = new CatalogProduct(sku, name, description);
+                var catalogProduct = new CatalogProduct(new StockKeepingUnit(sku), new ProductName(name), new ProductDescription(description));
             };
 
             // Assert
             action.Should().Throw<InvalidDescriptionException>();
-        }
-
-        [Fact]
-        public void ChangingCatalogProductSku_WithValidSku_ShouldUpdateSkuProperty()
-        {
-            // Arrange
-            var catalogProduct = new CatalogProduct("123", "product name", "Placeholder product description");
-            var newSku = "456";
-
-            // Act
-            catalogProduct.SetSku(newSku);
-
-            // Arrange
-            catalogProduct.Sku.Should().Be(newSku);
-        }
-
-        [Fact]
-        public void ChangingCatalogProductName_WithValidName_ShouldUpdateNameProperty()
-        {
-            // Arrange
-            var catalogProduct = new CatalogProduct("123", "product name", "Placeholder product description");
-            var newName = "new product name";
-
-            // Act
-            catalogProduct.SetName(newName);
-
-            // Arrange
-            catalogProduct.Name.Should().Be(newName);
-        }
-
-        [Fact]
-        public void ChangingCatalogProductDescription_WithValidDescription_ShouldUpdateDescriptionProperty()
-        {
-            // Arrange
-            var catalogProduct = new CatalogProduct("123", "product name", "Placeholder product description");
-            var newDescription = "New product description";
-
-            // Act
-            catalogProduct.SetDescription(newDescription);
-
-            // Arrange
-            catalogProduct.Description.Should().Be(newDescription);
         }
     }
 }

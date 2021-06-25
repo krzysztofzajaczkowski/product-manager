@@ -147,7 +147,7 @@ namespace ProductManager.UnitTests
 
             // Act
             await sut.UpdateAsync(newProduct);
-            var retrievedProduct = await sut.GetProductAsync(newProduct.CatalogProduct.Sku);
+            var retrievedProduct = await sut.GetProductAsync(newProduct.CatalogProduct.Sku.Sku);
 
             // Assert
             retrievedProduct.Should().BeEquivalentTo(newProduct);

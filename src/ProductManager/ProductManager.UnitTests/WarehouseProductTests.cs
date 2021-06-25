@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ProductManager.Core.Domain;
+using ProductManager.Core.Domain.ValueObjects;
 using ProductManager.Core.Exceptions;
 using Xunit;
 
@@ -21,8 +22,9 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var warehouseProduct = new WarehouseProduct(Guid.NewGuid(), sku, stock, weight);
-                warehouseProduct = new WarehouseProduct(sku, stock, weight);
+                //var warehouseProduct = new WarehouseProduct(Guid.NewGuid(), sku, stock, weight);
+                var warehouseProduct = new WarehouseProduct(Guid.NewGuid(), new StockKeepingUnit(sku), new ProductStock(stock), new ProductWeight(weight));
+                warehouseProduct = new WarehouseProduct(new StockKeepingUnit(sku), new ProductStock(stock), new ProductWeight(weight));
             };
 
             // Assert
@@ -38,7 +40,7 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var warehouseProduct = new WarehouseProduct(sku, stock, weight);
+                var warehouseProduct = new WarehouseProduct(new StockKeepingUnit(sku), new ProductStock(stock), new ProductWeight(weight));
             };
 
             // Assert
@@ -53,7 +55,7 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var warehouseProduct = new WarehouseProduct(sku, stock, weight);
+                var warehouseProduct = new WarehouseProduct(new StockKeepingUnit(sku), new ProductStock(stock), new ProductWeight(weight));
             };
 
             // Assert
@@ -69,53 +71,11 @@ namespace ProductManager.UnitTests
             Action action = () =>
             {
                 // Act
-                var warehouseProduct = new WarehouseProduct(sku, stock, weight);
+                var warehouseProduct = new WarehouseProduct(new StockKeepingUnit(sku), new ProductStock(stock), new ProductWeight(weight));
             };
 
             // Assert
             action.Should().Throw<InvalidWeightException>();
-        }
-
-        [Fact]
-        public void ChangingWarehouseProductSku_WithValidSku_ShouldUpdateSkuProperty()
-        {
-            // Arrange
-            var warehouseProduct = new WarehouseProduct("123", 10, 2.2);
-            var newSku = "456";
-
-            // Act
-            warehouseProduct.SetSku(newSku);
-
-            // Arrange
-            warehouseProduct.Sku.Should().Be(newSku);
-        }
-
-        [Fact]
-        public void ChangingWarehouseProductStock_WithValidStock_ShouldUpdateStockProperty()
-        {
-            // Arrange
-            var warehouseProduct = new WarehouseProduct("123", 10, 2.2);
-            var newStock = 15;
-
-            // Act
-            warehouseProduct.SetStock(newStock);
-
-            // Arrange
-            warehouseProduct.Stock.Should().Be(newStock);
-        }
-
-        [Fact]
-        public void ChangingWarehouseProductWeight_WithValidWeight_ShouldUpdateWeightProperty()
-        {
-            // Arrange
-            var warehouseProduct = new WarehouseProduct("123", 10, 2.2);
-            var newWeight = 5;
-
-            // Act
-            warehouseProduct.SetWeight(newWeight);
-
-            // Arrange
-            warehouseProduct.Weight.Should().Be(newWeight);
         }
     }
 }
