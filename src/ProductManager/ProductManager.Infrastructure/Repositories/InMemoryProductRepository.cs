@@ -24,7 +24,7 @@ namespace ProductManager.Infrastructure.Repositories
             await Task.FromResult(_products);
 
         public async Task<Product> GetProductAsync(string sku) =>
-            await Task.FromResult(_products.SingleOrDefault(x => x.CatalogProduct.Sku == sku));
+            await Task.FromResult(_products.SingleOrDefault(x => x.CatalogProduct.Sku.Sku == sku));
 
         public Task AddAsync(Product product)
         {
@@ -34,7 +34,7 @@ namespace ProductManager.Infrastructure.Repositories
 
         public async Task UpdateAsync(Product updatedProduct)
         {
-            var product = await GetProductAsync(updatedProduct.CatalogProduct.Sku);
+            var product = await GetProductAsync(updatedProduct.CatalogProduct.Sku.Sku);
             if (product == null)
             {
                 throw new ProductNotFoundException($"Product with sku {updatedProduct.CatalogProduct.Sku} was not found!");
