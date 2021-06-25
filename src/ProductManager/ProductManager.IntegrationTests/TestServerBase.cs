@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -28,8 +29,18 @@ namespace ProductManager.IntegrationTests
         {
             Environment.SetEnvironmentVariable("RUN_ELECTRON", "0");
 
+            var dirSeparator = string.Empty;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                dirSeparator = "/";
+            }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                dirSeparator = @"\";
+            }
+
             var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var solutionPath = Directory.GetParent(testAssemblyPath.Substring(0, testAssemblyPath.LastIndexOf($@"\bin\", StringComparison.Ordinal))).FullName;
+            var solutionPath = Directory.GetParent(testAssemblyPath.Substring(0, testAssemblyPath.LastIndexOf($@"{dirSeparator}bin{dirSeparator}", StringComparison.Ordinal))).FullName;
             var appsettingsPath = Path.Join(solutionPath, "ProductManager.Web");
 
             var webHostBuilder = new WebHostBuilder()
