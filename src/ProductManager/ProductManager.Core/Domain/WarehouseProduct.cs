@@ -4,64 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ProductManager.Core.Domain.ValueObjects;
 using ProductManager.Core.Exceptions;
 
 namespace ProductManager.Core.Domain
 {
     public class WarehouseProduct : Entity
     {
-        private readonly Regex _alphanumericRegex = new Regex(@"^[a-zA-Z0-9]+$");
-        public string Sku { get; protected set; }
-        public int Stock { get; protected set; }
-        public double Weight { get; protected set; }
+        public StockKeepingUnit Sku { get; protected set; }
+        public ProductStock Stock { get; protected set; }
+        public ProductWeight Weight { get; protected set; }
 
         protected WarehouseProduct()
         {
             
         }
-        public WarehouseProduct(string sku, int stock, double weight)
-        {
-            Id = Guid.NewGuid();
-            SetSku(sku);
-            SetStock(stock);
-            SetWeight(weight);
-        }
 
-        public WarehouseProduct(Guid id, string sku, int stock, double weight)
+        public WarehouseProduct(StockKeepingUnit sku, ProductStock stock, ProductWeight weight)
         {
-            Id = id;
-            SetSku(sku);
-            SetStock(stock);
-            SetWeight(weight);
-        }
-
-        public void SetSku(string sku)
-        {
-            if (string.IsNullOrWhiteSpace(sku) || !_alphanumericRegex.IsMatch(sku))
-            {
-                throw new InvalidSkuException("Product sku should contain only alphanumeric characters.");
-            }
             Sku = sku;
-        }
-
-        public void SetStock(int stock)
-        {
-            if (stock < 0)
-            {
-                throw new InvalidStockException($"Stock of product with Sku {Sku} can not be less than 0.");
-            }
-
             Stock = stock;
-        }
-
-        public void SetWeight(double weight)
-        {
-            if (weight < 0)
-            {
-                throw new InvalidWeightException($"Weight of product with Sku {Sku} can not be less than 0.");
-            }
-
             Weight = weight;
         }
+
+        public WarehouseProduct(Guid id, StockKeepingUnit sku, ProductStock stock, ProductWeight weight)
+        {
+            Id = id;
+            Sku = sku;
+            Stock = stock;
+            Weight = weight;
+        }
+
     }
 }

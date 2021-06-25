@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using ProductManager.Core.Domain;
+using ProductManager.Core.Domain.ValueObjects;
 using ProductManager.Infrastructure.Configuration;
 using ProductManager.Infrastructure.DTO;
 using Xunit;
@@ -171,8 +172,8 @@ namespace ProductManager.UnitTests
 
             _mapper.Map(warehouseDto, product);
 
-            product.WarehouseProduct.Stock.Should().Be(newStock);
-            product.WarehouseProduct.Weight.Should().Be(newWeight);
+            product.WarehouseProduct.Stock.Should().BeEquivalentTo(new ProductStock(newStock));
+            product.WarehouseProduct.Weight.Should().BeEquivalentTo(new ProductWeight(newWeight));
         }
 
         [Fact]
@@ -206,8 +207,8 @@ namespace ProductManager.UnitTests
 
             _mapper.Map(catalogProductDto, product);
 
-            product.CatalogProduct.Name.Should().Be(newProductName);
-            product.CatalogProduct.Description.Should().Be(newDescription);
+            product.CatalogProduct.Name.Should().BeEquivalentTo(new ProductName(newProductName));
+            product.CatalogProduct.Description.Should().BeEquivalentTo(new ProductDescription(newDescription));
         }
 
         [Fact]
@@ -242,9 +243,9 @@ namespace ProductManager.UnitTests
 
             _mapper.Map(salesProductDto, product);
 
-            product.SalesProduct.Cost.Should().Be(newCost);
-            product.SalesProduct.TaxPercentage.Should().Be(newTaxPercentage);
-            product.SalesProduct.NetPrice.Should().Be(newNetPrice);
+            product.SalesProduct.Price.Cost.Should().Be(newCost);
+            product.SalesProduct.Price.TaxPercentage.Should().Be(newTaxPercentage);
+            product.SalesProduct.Price.NetPrice.Should().Be(newNetPrice);
         }
 
         [Fact]
