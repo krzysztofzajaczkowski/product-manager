@@ -16,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace ProductManager.AcceptanceTests
 {
+    [Collection("DockerTests")]
     public class AuthTests : DockerTestsBase
     {
         private readonly Task _clientsBootstrapTask;
