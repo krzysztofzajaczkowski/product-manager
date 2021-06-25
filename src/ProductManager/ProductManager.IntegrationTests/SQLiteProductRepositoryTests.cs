@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Specialized;
 using ProductManager.Core.Domain;
+using ProductManager.Core.Domain.ValueObjects;
 using ProductManager.Infrastructure.Database;
 using ProductManager.Infrastructure.Repositories;
 using Xunit;
@@ -154,9 +155,9 @@ namespace ProductManager.IntegrationTests
 
 
             // Assert
-            product.CatalogProduct.Name.Should().Be(newName);
-            product.WarehouseProduct.Stock.Should().Be(newStock);
-            product.SalesProduct.NetPrice.Should().Be(newNetPrice);
+            product.CatalogProduct.Name.Should().BeEquivalentTo(new ProductName(newName));
+            product.WarehouseProduct.Stock.Should().BeEquivalentTo(new ProductStock(newStock));
+            product.SalesProduct.Price.NetPrice.Should().Be(newNetPrice);
         }
 
         public void Dispose()
