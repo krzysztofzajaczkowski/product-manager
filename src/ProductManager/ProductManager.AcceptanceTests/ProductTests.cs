@@ -16,18 +16,19 @@ using Xunit.Abstractions;
 namespace ProductManager.AcceptanceTests
 {
     [Collection("DockerTests")]
-    public class ProductTests : DockerTestsBase
+    public class ProductTests : DockerTestsBase, IDisposable
     {
-        private readonly Task _clientsBootstrapTask;
-        private HttpClient _client;
+        private readonly HttpClientFixture _httpClientFixture;
+        private readonly HttpClient _client;
 
-        public ProductTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public ProductTests(ITestOutputHelper testOutputHelper, HttpClientFixture httpClientFixture) : base(testOutputHelper)
         {
-            _clientsBootstrapTask = Task.Run(async () =>
+            _httpClientFixture = httpClientFixture;
+            _client = httpClientFixture.Client;
+            if (_client.BaseAddress == null)
             {
-                _client = await SetupConnection("localhost:8006");
-                return Task.CompletedTask;
-            });
+                _client.BaseAddress = new Uri("http://localhost:8006");
+            }
         }
 
         public async Task LoginAsync(string email, string password, string role = "user")
@@ -47,7 +48,6 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingBrowse_WhenNotAuthenticated_ShouldReturnUnauthorized()
         {
-            await _clientsBootstrapTask;
             // Arrange/Act
             var response = await _client.GetAsync("Products/Browse");
 
@@ -58,7 +58,6 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingBrowse_WhenAuthenticated_ShouldReturnOk()
         {
-            await _clientsBootstrapTask;
             // Arrange
             await LoginAsync("admin@admin.com", "secret");
 
@@ -72,8 +71,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingBrowse_WhenAuthenticatedAndWithProducts_ShouldReturnNonEmptyListOfProductBlockDto()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             await LoginAsync("admin@admin.com", "secret");
 
             // Act
@@ -86,8 +84,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingGet_WhenNotAuthenticated_ShouldReturnUnauthorized()
         {
-            await _clientsBootstrapTask;
-            // Arrange/Act
+            //Arrange/Act
             var sku = "123";
             var response = await _client.GetAsync($"Products/Browse/{sku}");
 
@@ -98,8 +95,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingGet_WhenAuthenticatedAndProductExists_ShouldReturnOk()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             await LoginAsync("admin@admin.com", "secret");
             var someProductSku = (await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/browse")).First().Sku;
 
@@ -113,8 +109,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingGet_WhenAuthenticatedAndProductDoesNotExist_ShouldReturnNotFound()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             var sku = "123";
             await LoginAsync("admin@admin.com", "secret");
 
@@ -128,8 +123,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingGet_WhenAuthenticatedAndProductExists_ShouldReturnProductDto()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             await LoginAsync("admin@admin.com", "secret");
             var someProductSku = (await _client.GetFromJsonAsync<List<ProductBlockDto>>("Products/browse")).First().Sku;
 
@@ -143,8 +137,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingCreate_WhenNotAuthenticated_ShouldReturnUnauthorized()
         {
-            await _clientsBootstrapTask;
-            // Arrange/Act
+            //Arrange/Act
             var response = await _client.PostAsJsonAsync("Products/Create", new CreateProductDto());
 
             // Assert
@@ -154,8 +147,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingCreate_WhenAuthenticatedAndNotAuthorizedAsCatalogManager_ShouldReturnForbidden()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             await LoginAsync("admin@admin.com", "secret");
 
             // Act
@@ -168,8 +160,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingCreate_WhenAuthenticatedAndAuthorizedAsCatalogManager_ShouldReturnCreated()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             var sku = "123";
             var productName = "product name";
             var description = "desc";
@@ -191,8 +182,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task CallingCreate_WhenAuthenticatedAndAuthorizedAsCatalogManager_ShouldCreateNewProduct()
         {
-            await _clientsBootstrapTask;
-            // Arrange
+            //Arrange
             var sku = "123";
             var productName = "product name";
             var description = "desc";
@@ -306,6 +296,12 @@ namespace ProductManager.AcceptanceTests
             retrievedProduct.Should().NotBeNull();
             retrievedProduct.Name.Should().Be(newProductName);
             retrievedProduct.Description.Should().Be(newDescription);
+        }
+
+        public new void Dispose()
+        {
+            base.Dispose();
+            _client.DefaultRequestHeaders.Remove("Authorization");
         }
     }
 }

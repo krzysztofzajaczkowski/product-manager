@@ -17,27 +17,26 @@ using Xunit.Abstractions;
 namespace ProductManager.AcceptanceTests
 {
     [Collection("DockerTests")]
-    public class AuthTests : DockerTestsBase
+    public class AuthTests : DockerTestsBase, IDisposable
     {
-        private readonly Task _clientsBootstrapTask;
-        private HttpClient _client;
+        private readonly HttpClientFixture _httpClientFixture;
+        private readonly HttpClient _client;
 
-        public AuthTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public AuthTests(ITestOutputHelper testOutputHelper, HttpClientFixture httpClientFixture) : base(testOutputHelper)
         {
-            _clientsBootstrapTask = Task.Run(async () =>
+            _httpClientFixture = httpClientFixture;
+            _client = httpClientFixture.Client;
+            if (_client.BaseAddress == null)
             {
-                _client = await SetupConnection("localhost:8006");
-                return Task.CompletedTask;
-            });
+                _client.BaseAddress = new Uri("http://localhost:8006");
+            }
         }
 
         [Fact]
         public async Task RegisterAsync_WhenUserDoesNotExist_ShouldReturnCreated()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.PostAsJsonAsync("account/register", new RegisterRequest
+            
+            var response = await _client.PostAsJsonAsync("account/register", new RegisterRequest
             {
                 Name = "NewUser",
                 Email = "newuser@email.com",
@@ -51,10 +50,8 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task RegisterAsync_WhenUserDoesNotExistAndNameNotSpecified_ShouldReturnBadRequest()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.PostAsJsonAsync("account/register", new RegisterRequest
+            
+            var response = await _client.PostAsJsonAsync("account/register", new RegisterRequest
             {
                 Email = "newuser@email.com",
                 Password = "secret",
@@ -67,10 +64,8 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task RegisterAsync_WhenUserDoesNotExistAndEmailNotSpecified_ShouldReturnBadRequest()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.PostAsJsonAsync("account/register", new RegisterRequest
+            
+            var response = await _client.PostAsJsonAsync("account/register", new RegisterRequest
             {
                 Name = "NewUser",
                 Password = "secret",
@@ -83,10 +78,8 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task RegisterAsync_WhenUserDoesNotExistAndPasswordNotSpecified_ShouldReturnBadRequest()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.PostAsJsonAsync("account/register", new RegisterRequest
+            
+            var response = await _client.PostAsJsonAsync("account/register", new RegisterRequest
             {
                 Name = "NewUser",
                 Email = "newuser@email.com",
@@ -99,10 +92,8 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task RegisterAsync_WhenUserDoesNotExistAndRoleNotSpecified_ShouldReturnBadRequest()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.PostAsJsonAsync("account/register", new RegisterRequest
+            
+            var response = await _client.PostAsJsonAsync("account/register", new RegisterRequest
             {
                 Name = "NewUser",
                 Email = "newuser@email.com",
@@ -115,10 +106,8 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task LoginAsync_WhenUserDoesNotExist_ShouldReturnBadRequestStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = "user@email.com",
                 Password = "secret",
@@ -131,14 +120,12 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task LoginAsync_WhenUserExistsAndInvalidCredentials_ShouldReturnBadRequestStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "CatalogManager";
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = $"{userPassword}1",
@@ -151,14 +138,12 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task LoginAsync_WhenUserExistsAndValidCredentialsAndDoesNotHaveRole_ShouldReturnBadRequestStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "nonExistentRole";
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -171,14 +156,12 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task LoginAsync_WhenUserExistsAndValidCredentials_ShouldReturnOkStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "CatalogManager";
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -191,14 +174,12 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task LoginAsync_WhenUserExistsAndValidCredentials_ShouldReturnTokenDto()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "CatalogManager";
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -213,10 +194,8 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task GetAsync_WhenNotLoggedIn_ShouldReturnUnauthorizedStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-
-            var response = await client.GetAsync("account");
+            
+            var response = await _client.GetAsync("account");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -224,14 +203,12 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task GetAsync_WhenUserLoggedIn_ShouldReturnOkStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "CatalogManager";
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -240,9 +217,9 @@ namespace ProductManager.AcceptanceTests
 
             var tokenDto = await response.Content.ReadFromJsonAsync<TokenDto>();
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
 
-            response = await client.GetAsync("account");
+            response = await _client.GetAsync("account");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -250,9 +227,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task GetAsync_WhenUserLoggedIn_ShouldReturnAccountDto()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "CatalogManager";
@@ -271,7 +246,7 @@ namespace ProductManager.AcceptanceTests
             };
 
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -279,9 +254,9 @@ namespace ProductManager.AcceptanceTests
             });
             var tokenDto = await response.Content.ReadFromJsonAsync<TokenDto>();
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
 
-            var receivedAccountDto = await client.GetFromJsonAsync<AccountDto>("account");
+            var receivedAccountDto = await _client.GetFromJsonAsync<AccountDto>("account");
 
             receivedAccountDto.Should().BeOfType<AccountDto>();
             receivedAccountDto.Email.Should().Be(accountDto.Email);
@@ -292,11 +267,9 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task GetAsyncById_WhenNotLoggedIn_ShouldReturnUnauthorizedStatusCode()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var guid = Guid.NewGuid();
+                        var guid = Guid.NewGuid();
 
-            var response = await client.GetAsync($"account/{guid}");
+            var response = await _client.GetAsync($"account/{guid}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -304,15 +277,13 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task GetAsyncById_WhenUserLoggedIn_ShouldReturnForbidden()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userId = Guid.NewGuid();
+                        var userId = Guid.NewGuid();
             var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "user";
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -321,9 +292,9 @@ namespace ProductManager.AcceptanceTests
 
             var tokenDto = await response.Content.ReadFromJsonAsync<TokenDto>();
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
 
-            response = await client.GetAsync($"account/{userId}");
+            response = await _client.GetAsync($"account/{userId}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
@@ -332,9 +303,7 @@ namespace ProductManager.AcceptanceTests
         [Fact]
         public async Task GetAsyncById_WhenAdminLoggedIn_ShouldReturnAccountDto()
         {
-            await _clientsBootstrapTask;
-            using var client = _client;
-            var userName = "admin";
+                        var userName = "admin";
             var userEmail = "admin@admin.com";
             var userPassword = "secret";
             var roleName = "admin";
@@ -352,7 +321,7 @@ namespace ProductManager.AcceptanceTests
                 }
             };
 
-            var response = await client.PostAsJsonAsync("account/login", new LoginRequest
+            var response = await _client.PostAsJsonAsync("account/login", new LoginRequest
             {
                 Email = userEmail,
                 Password = userPassword,
@@ -360,11 +329,11 @@ namespace ProductManager.AcceptanceTests
             });
 
             var tokenDto = await response.Content.ReadFromJsonAsync<TokenDto>();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenDto.Token);
 
-            var receivedAccountDto = await client.GetFromJsonAsync<AccountDto>("account");
+            var receivedAccountDto = await _client.GetFromJsonAsync<AccountDto>("account");
 
-            response = await client.GetAsync($"account/{receivedAccountDto.Id}");
+            response = await _client.GetAsync($"account/{receivedAccountDto.Id}");
 
             receivedAccountDto = await response.Content.ReadFromJsonAsync<AccountDto>();
 
@@ -372,6 +341,12 @@ namespace ProductManager.AcceptanceTests
             receivedAccountDto.Email.Should().Be(accountDto.Email);
             receivedAccountDto.Name.Should().Be(accountDto.Name);
             receivedAccountDto.Roles.Should().BeEquivalentTo(accountDto.Roles);
+        }
+
+        public new void Dispose()
+        {
+            base.Dispose();
+            _client.DefaultRequestHeaders.Remove("Authorization");
         }
     }
 }
