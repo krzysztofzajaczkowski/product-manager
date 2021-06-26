@@ -13,6 +13,7 @@ using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
 using ProductManager.Infrastructure.DTO;
 using ProductManager.Web.Requests;
+using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -73,7 +74,7 @@ namespace ProductManager.AcceptanceTests
 
         public void Dispose()
         {
-            CompositeService.Stop();
+            CompositeService.Remove();
             CompositeService.Dispose();
         }
     }
