@@ -9,4 +9,4 @@ install:
   
 script:
   - dotnet build
-  - travis_wait 40 dotnet test
+  - travis_wait dotnet test
