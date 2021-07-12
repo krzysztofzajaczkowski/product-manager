@@ -13,7 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductManager.IntegrationT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductManager.UnitTests", "ProductManager.UnitTests\ProductManager.UnitTests.csproj", "{A7326271-D8C4-4C3A-93F4-250C542865DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductManager.AcceptanceTests", "ProductManager.AcceptanceTests\ProductManager.AcceptanceTests.csproj", "{41E31B89-9159-4D3E-BE8B-BADF816FE5AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductManager.AcceptanceTests", "ProductManager.AcceptanceTests\ProductManager.AcceptanceTests.csproj", "{41E31B89-9159-4D3E-BE8B-BADF816FE5AE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1EC9311A-A072-4511-BF38-792A75A1B1CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9F8679B4-4016-4C5E-B0EA-A4958E2A1287}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +52,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D50836B6-52F1-41E3-9806-1C7A9CD41100} = {1EC9311A-A072-4511-BF38-792A75A1B1CA}
+		{DFAACDEB-A3E5-4EFE-9968-D0C166896CE7} = {1EC9311A-A072-4511-BF38-792A75A1B1CA}
+		{3EC94716-A166-41F7-A43F-A832C77F378B} = {1EC9311A-A072-4511-BF38-792A75A1B1CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C967BC1-6EA6-4502-AA65-024216A37701}
