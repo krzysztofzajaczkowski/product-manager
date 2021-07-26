@@ -1,4 +1,5 @@
 [![LinkedIn][linkedin-shield-zajaczkowski]][linkedin-url-zajaczkowski] [![Build Status](https://travis-ci.com/krzysztofzajaczkowski/product-manager.svg?branch=develop)](https://travis-ci.com/krzysztofzajaczkowski/product-manager) 
+[![codecov](https://codecov.io/gh/krzysztofzajaczkowski/product-manager/branch/infra/34_code-coverage-workflow/graph/badge.svg?token=0IC3R4RHQC)](https://codecov.io/gh/krzysztofzajaczkowski/product-manager)
 
 
 # Product Manager
